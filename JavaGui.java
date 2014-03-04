@@ -10,7 +10,7 @@ public class JavaGui {
 
 	public static void main(String[] args)
 	{
-        final String text = "The-Simple-Application";
+        final String text = "Simple Todo List";
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -26,8 +26,8 @@ public class JavaGui {
 class ApplicationWindow extends JFrame {
 	
 	// Name-constants to define the various dimensions
-	public static final int WINDOW_WIDTH  = 300;
-	public static final int WINDOW_HEIGHT = 150;
+	public static final int WINDOW_WIDTH  = 640;
+	public static final int WINDOW_HEIGHT = 480;
 
     JMenu   mainMenu  = null;
     JPanel  mainPanel = null;
