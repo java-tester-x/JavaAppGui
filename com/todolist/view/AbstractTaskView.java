@@ -7,9 +7,7 @@ import javax.swing.JPanel;
 
 import com.todolist.model.Task;
 
-abstract class AbstractTaskView 
-extends        JPanel
-implements     Observer {
+public abstract class AbstractTaskView extends JPanel implements Observer {
 
     private Task task;
 

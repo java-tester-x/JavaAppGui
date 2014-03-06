@@ -1,7 +1,11 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.*;
 
+import com.todolist.model.*;
+import com.todolist.view.*;
+import com.todolist.controller.*;
 
 /**
  * Main apllication file.
@@ -34,19 +38,30 @@ class ApplicationWindow extends JFrame {
 
     public ApplicationWindow(String title)
     {
-		Container cp = this.getContentPane();
+		Container contentPane = this.getContentPane();
 
 		// Content-pane sets layout
 		// cp.setLayout(new ....Layout());
+        contentPane.setLayout(new GridLayout(3, 1));
 
 		// Allocate the UI components
 		// .....
+        Task aTask = new Task(1, 0, "String text");
+        TaskTextView taskTextView = new TaskTextView(aTask);
+        TaskController taskController = new TaskController(aTask);
+
+        JPanel taskPanel = new JPanel();
+        taskPanel.setBorder(new TitledBorder("Task #" + aTask.getId()));
+        taskPanel.add(taskController);
+        taskPanel.add(taskTextView);
 
 		// Content-pane adds components
 		// cp.add(....)
+        contentPane.add(taskPanel);
 
 		// Source object adds listener
 		// .....
+
       
         pack();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);       
