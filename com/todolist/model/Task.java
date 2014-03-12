@@ -18,6 +18,10 @@ public class Task extends Observable {
         setText(text);
     }
 
+    public Task() {
+        this(0, 0, null);
+    }
+
     public void setText(String text) {
         this.text = text;
         setChanged();

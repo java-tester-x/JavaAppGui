@@ -3,9 +3,11 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.Platform;
+import java.util.Vector;
+
+import com.todolist.util.DbsnLibrary;
+import com.todolist.model.Task;
+import com.todolist.model.TaskTableModel;
 
 /**
  * Main apllication file.
@@ -66,33 +68,16 @@ class ApplicationWindow extends JFrame {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);        
     }
 
-    private void initComponents() {
-        taskTableModel = new DefaultTableModel();
-        taskTableModel.addColumn("Id");
-        taskTableModel.addColumn("Text");
-        taskTableModel.addColumn("Created At");
-        taskTableModel.addColumn("Complited To");
-
-        /*
-        String[] task01 = {"1", "Task 01", "07.03.2014", ""};
-        taskTableModel.addRow(task01);
-        String[] task02 = {"2", "Task 02", "07.03.2014", ""};
-        taskTableModel.addRow(task02);
-        String[] task03 = {"3", "Task 03", "07.03.2014", ""};
-        taskTableModel.addRow(task03);
-        String[] task04 = {"4", "Task 04", "07.03.2014", ""};
-        taskTableModel.addRow(task04);
-        String[] task05 = {"5", "Task 05", "07.03.2014", ""};
-        taskTableModel.addRow(task05);
-        */
-
-        String[] tasks = getAllTasksFromDbsn("TestDBSN");
-        for(int i = 0; i < tasks.length; i++) {
-            String[] taskXX = {Integer.toString(i), tasks[i], "", ""};
-            taskTableModel.addRow(taskXX);            
-        }
+    private void initComponents()
+    {
+        Dbsn db = Dbsn.getInstance();
+        db.connectToDbsn("resources/TestDBSN");
+        Vector<Vector<Object>> data = db.loadData();
+        db.disconnectFromDbsn();
 
         taskTable = new JTable(taskTableModel);
+        taskTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
 
         addButton    = new JButton("Add Task");
         addButton.addActionListener(new ActionListener() {
@@ -105,7 +90,8 @@ class ApplicationWindow extends JFrame {
         removeButton = new JButton("Remove Task");
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                taskTableModel.removeRow(taskTable.getSelectedRow());            
+                int rowIndex = taskTable.getSelectedRow();
+                taskTableModel.removeRow(rowIndex);
             }
         });
 
@@ -114,46 +100,92 @@ class ApplicationWindow extends JFrame {
         inputPanel.add(removeButton);
     }
 
-    private String[] getAllTasksFromDbsn(String dbsnName)
-    {
-        int dbh = DbsnLibrary.INSTANCE.openDBSN(dbsnName);
-        if (dbh < 0) {
-            return new String[] {};
+    // private DefaultTableModel buildTableModelFromDbsn()
+    // {
+    //     String[] columns = {"Id", "Text", "Created At", "Complited To"};
+    //     Vector<String> columnNames = new Vector<String>();
+    //     Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+
+    //     // names of columns        
+    //     int columnCount = columns.length;
+    //     for (int i = 0; i < columnCount; i++) {
+    //         columnNames.add(columns[i]);
+    //     }
+
+    //     // data of the table        
+    //     int rowCount = DbsnLibrary.INSTANCE.countFragm(dbh);
+    //     for(int i = 0; i < rowCount; i++)
+    //     {
+    //         byte[] fragm = new byte[32567];
+    //         DbsnLibrary.INSTANCE.setNom(dbh, i);
+    //         DbsnLibrary.INSTANCE.getFragm(dbh, fragm, fragm.length);
+
+    //         Vector<Object> vector = new Vector<Object>();
+    //         vector.add(i);
+    //         vector.add(new String(fragm).trim());
+    //         vector.add(null);
+    //         vector.add(null);
+
+    //         data.add(vector);
+    //     }
+
+    //     return new DefaultTableModel(data, columnNames);
+    // }
+
+
+    public class Dbsn {
+        private static Dbsn instance;
+
+        public static synchronized Dbsn getInstance() {
+            if (instance == null) {
+                instance = new Dbsn();
+            }
+            return instance;
         }
 
-        int retcode;
 
-        int rowCount = 0;
-        do {
-            rowCount++;
-        } while (0 != DbsnLibrary.INSTANCE.setNom(dbh, rowCount));
+        private int dbh;
 
-        byte[]   fragm = new byte[32567];
-        String[] tasks = new String[rowCount];
-        for(int i = 0; i < tasks.length; i++)
+        public int connectToDbsn(String dbsnPath) {
+            return DbsnLibrary.INSTANCE.openDBSN(dbsnPath);
+        }
+
+        public void removeTaskFromDbsn(int taskId) {
+            DbsnLibrary.INSTANCE.setNom(dbh, taskId);
+            DbsnLibrary.INSTANCE.delFragm(dbh);
+        }
+
+        public boolean isConnectedDbsn() {
+            return dbh > 0;
+        }
+
+        public void disconnectFromDbsn() {
+            DbsnLibrary.INSTANCE.flushDBSN(dbh);
+            DbsnLibrary.INSTANCE.closeDBSN(dbh);
+        }
+
+        public Vector<Vector<Object>> loadData()
         {
-            retcode = DbsnLibrary.INSTANCE.setNom(dbh, i);
-            DbsnLibrary.INSTANCE.getFragm(dbh, fragm, fragm.length);
-            tasks[i] = new String(fragm).trim();
-            tasks[i] += Integer.toString(retcode);
-        }
+            int rowCount = DbsnLibrary.INSTANCE.countFragm(dbh);
 
-        retcode = DbsnLibrary.INSTANCE.flushDBSN(dbh);
-        retcode = DbsnLibrary.INSTANCE.closeDBSN(dbh);
+            Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+            for(int i = 0; i < rowCount; i++)
+            {
+                byte[] fragm = new byte[32567];
+                DbsnLibrary.INSTANCE.setNom(dbh, i);
+                DbsnLibrary.INSTANCE.getFragm(dbh, fragm, fragm.length);
 
-        return tasks;     
+                Vector<Object> vector = new Vector<Object>();
+                vector.add(i);
+                vector.add(new String(fragm).trim());
+                vector.add(null);
+                vector.add(null);
+
+                data.add(vector);
+            }
+
+            return data;
+        } 
     }
 
-    public interface DbsnLibrary extends Library {        
-        DbsnLibrary INSTANCE = (DbsnLibrary) Native.loadLibrary("D:/users/vano/JavaAppGui/lib/dbsn", DbsnLibrary.class);
-
-        int createDBSN    (String fil_name);
-        int openDBSN      (String fil_name);
-        int flushDBSN     (int dbhadr); 
-        int closeDBSN     (int dbhadr);
-        int addFragm      (int dbhadr, String fragm, int sys_tag, int tag);    
-        int getFragm      (int dbhadr, byte[] fragm, int bufsize);
-        int setNom        (int dbhadr, int new_nom);
-        int countRef      (int fhr);
-    }
 }
