@@ -1,14 +1,16 @@
 package com.todolist.model;
 
+import java.util.Date;
 import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
-class TaskTableModel extends AbstractTableModel {
+public class TaskTableModel extends AbstractTableModel {
 
     public static final int ID_INDEX           = 0;
     public static final int TEXT_INDEX         = 1;
     public static final int CREATED_AT_INDEX   = 2;
     public static final int COMPLITED_TO_INDEX = 3;
+    public static final int HIDDEN_INDEX       = 4;
 
     protected String[]  columnNames = {"Id", "Text", "Created At", "Complited To"};    
     protected Vector    dataVector  = new Vector();
@@ -35,10 +37,10 @@ class TaskTableModel extends AbstractTableModel {
     
     @Override
     public boolean isCellEditable(int row, int column) {
-        if (column == TEXT_INDEX) {
-            return true;
+        if (column == HIDDEN_INDEX)  {
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -79,7 +81,7 @@ class TaskTableModel extends AbstractTableModel {
         Task task = (Task) dataVector.get(row);
         switch (column) {
             case ID_INDEX:
-                task.setId((Integer) value);
+                task.setId(0);
                 break;
             case TEXT_INDEX:
                 task.setText((String) value);
@@ -105,8 +107,8 @@ class TaskTableModel extends AbstractTableModel {
         Task task = (Task) dataVector.get(dataVector.size() - 1);
         if  (   task.getId() == 0
             &&  task.getText().trim().equals("") 
-            &&  task.getCreationDate().toString().equals("")
-            &&  task.getCompletionDate().toString().equals("")
+            // &&  task.getCreationDate().toString().equals("")
+            // &&  task.getCompletionDate().toString().equals("")
             )
         {
             return true;

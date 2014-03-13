@@ -1,9 +1,10 @@
 package com.todolist.model;
 
 import java.util.Date;
-import java.util.Observable;
+// import java.util.Observable;
 
-public class Task extends Observable {
+// public class Task extends Observable {
+public class Task {
 
     private int     id;
     private int     parentId;
@@ -15,35 +16,39 @@ public class Task extends Observable {
         this.id           = id;
         this.parentId     = parentId;
         this.creationDate = new Date();
-        setText(text);
+        // setText(text);
     }
 
     public Task() {
         this(0, 0, null);
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setText(String text) {
         this.text = text;
-        setChanged();
-        notifyObservers();
+        // setChanged();
+        // notifyObservers();
     }
 
     public void setParentId(int parentId) {
         this.parentId = parentId;
-        setChanged();
-        notifyObservers();
+        // setChanged();
+        // notifyObservers();
     }
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
-        setChanged();
-        notifyObservers();
+        // setChanged();
+        // notifyObservers();
     }
 
     public void setCompletionDate(Date completionDate) {
         this.completionDate = completionDate;
-        setChanged();
-        notifyObservers();
+        // setChanged();
+        // notifyObservers();
     }
 
     public int getId() {
@@ -65,5 +70,4 @@ public class Task extends Observable {
     public Date getCompletionDate() {
         return completionDate;
     }
-
 }
