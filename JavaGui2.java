@@ -44,14 +44,15 @@ class ApplicationWindow extends JFrame {
     private JMenu   mainMenu  = null;
     private JPanel  mainPanel = null;
 
-    // private DefaultTableModel  taskTableModel;
     private TaskTableModel     taskTableModel;
     private JTable             taskTable;
+    private Vector<Task>       taskTableData;
+
+    private JPanel             inputPanel;
     private JScrollPane        scroller;
     private JButton            addButton;
     private JButton            removeButton;
-    private JPanel             inputPanel;
-
+    
 
     public ApplicationWindow(String title)
     {
@@ -80,10 +81,10 @@ class ApplicationWindow extends JFrame {
     {
         Dbsn db = new Dbsn();
         db.connectToDbsn("resources/TestDBSN");
-        Vector<Vector<Object>> data = db.loadData();
+        taskTableData = db.loadData();
         db.disconnectFromDbsn();
 
-        taskTableModel = new TaskTableModel(data);
+        taskTableModel = new TaskTableModel(taskTableData);
         taskTableModel.addTableModelListener(new ApplicationWindow.TaskTableModelListener());
         taskTable = new JTable();
         taskTable.setModel(taskTableModel);
@@ -196,8 +197,8 @@ class ApplicationWindow extends JFrame {
 
         private int dbh;
 
-        public int connectToDbsn(String dbsnPath) {
-            return DbsnLibrary.INSTANCE.openDBSN(dbsnPath);
+        public void connectToDbsn(String dbsnPath) {
+            dbh = DbsnLibrary.INSTANCE.openDBSN(dbsnPath);
         }
 
         public void removeTaskFromDbsn(int taskId) {
@@ -214,24 +215,19 @@ class ApplicationWindow extends JFrame {
             DbsnLibrary.INSTANCE.closeDBSN(dbh);
         }
 
-        public Vector<Vector<Object>> loadData()
+        public Vector<Task> loadData()
         {
             int rowCount = DbsnLibrary.INSTANCE.countFragm(dbh);
 
-            Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+            Vector<Task> data = new Vector<Task>();
             for(int i = 0; i < rowCount; i++)
             {
                 byte[] fragm = new byte[32567];
                 DbsnLibrary.INSTANCE.setNom(dbh, i);
                 DbsnLibrary.INSTANCE.getFragm(dbh, fragm, fragm.length);
 
-                Vector<Object> vector = new Vector<Object>();
-                vector.add(i);
-                vector.add(new String(fragm).trim());
-                vector.add(null);
-                vector.add(null);
-
-                data.add(vector);
+                Task aTask = new Task(i, 0, new String(fragm).trim());
+                data.add(aTask);
             }
 
             return data;

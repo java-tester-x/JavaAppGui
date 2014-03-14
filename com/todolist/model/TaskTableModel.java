@@ -1,6 +1,7 @@
 package com.todolist.model;
 
 import java.util.Date;
+import java.util.Collection;
 import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
@@ -12,10 +13,10 @@ public class TaskTableModel extends AbstractTableModel {
     public static final int COMPLITED_TO_INDEX = 3;
     public static final int HIDDEN_INDEX       = 4;
 
-    protected String[]  columnNames = {"Id", "Text", "Created At", "Complited To"};    
-    protected Vector    dataVector  = new Vector();
+    protected String[]        columnNames = {"Id", "Text", "Created At", "Complited To", ""};    
+    protected Vector<Task>    dataVector  = new Vector<Task>();
 
-    public TaskTableModel(Vector dataVector) {
+    public TaskTableModel(Vector<Task> dataVector) {
         super();
         this.dataVector = dataVector;
     }
@@ -50,6 +51,8 @@ public class TaskTableModel extends AbstractTableModel {
             case CREATED_AT_INDEX:
             case COMPLITED_TO_INDEX:
                 return Date.class;            
+            case ID_INDEX:
+                return Integer.class;
             case TEXT_INDEX:
                 return String.class;
             default: 
@@ -81,7 +84,8 @@ public class TaskTableModel extends AbstractTableModel {
         Task task = (Task) dataVector.get(row);
         switch (column) {
             case ID_INDEX:
-                task.setId(0);
+                // int id = (Integer) value;
+                task.setId((Integer) value);
                 break;
             case TEXT_INDEX:
                 task.setText((String) value);
