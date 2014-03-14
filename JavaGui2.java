@@ -89,7 +89,7 @@ class ApplicationWindow extends JFrame {
         taskTable = new JTable();
         taskTable.setModel(taskTableModel);
         taskTable.setSurrendersFocusOnKeystroke(true);
-        if (!taskTableModel.hasEmptyRow()) {
+        if ( ! taskTableModel.hasEmptyRow()) {
             taskTableModel.addEmptyRow();
         }
 
@@ -225,8 +225,9 @@ class ApplicationWindow extends JFrame {
                 byte[] fragm = new byte[32567];
                 DbsnLibrary.INSTANCE.setNom(dbh, i);
                 DbsnLibrary.INSTANCE.getFragm(dbh, fragm, fragm.length);
-
-                Task aTask = new Task(i, 0, new String(fragm).trim());
+                String text = new String(fragm).trim();
+                System.out.println(text);
+                Task aTask = new Task(i, 0, text);
                 data.add(aTask);
             }
 

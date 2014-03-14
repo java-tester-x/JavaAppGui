@@ -13,10 +13,11 @@ public class Task {
     private Date    completionDate;
 
     public Task(int id, int parentID, String text) {
-        this.id           = id;
-        this.parentId     = parentId;
-        this.creationDate = new Date();
-        // setText(text);
+        this.id             = id;
+        this.parentId       = parentId;
+        this.creationDate   = null;
+        this.completionDate = null;
+        this.text           = text;
     }
 
     public Task() {
