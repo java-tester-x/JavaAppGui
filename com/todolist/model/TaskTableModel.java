@@ -110,7 +110,7 @@ public class TaskTableModel extends AbstractTableModel {
 
         Task task = (Task) dataVector.get(dataVector.size() - 1);
         if  (   task.getId() == 0
-            &&  task.getText().trim().equals("") 
+            // &&  task.getText().trim().equals("") 
             // &&  task.getCreationDate().toString().equals("")
             // &&  task.getCompletionDate().toString().equals("")
             )
@@ -125,5 +125,11 @@ public class TaskTableModel extends AbstractTableModel {
     public void addEmptyRow() {
         dataVector.add(new Task());
         fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
+    }
+
+    public void removeRow(int row)
+    {
+        dataVector.remove(row);
+        fireTableRowsDeleted(row, row);
     }
 }

@@ -77,6 +77,9 @@ class ApplicationWindow extends JFrame {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);        
     }
 
+    /**
+     * [initComponents description]
+     */
     private void initComponents()
     {
         Dbsn db = new Dbsn();
@@ -89,9 +92,7 @@ class ApplicationWindow extends JFrame {
         taskTable = new JTable();
         taskTable.setModel(taskTableModel);
         taskTable.setSurrendersFocusOnKeystroke(true);
-        if ( ! taskTableModel.hasEmptyRow()) {
-            taskTableModel.addEmptyRow();
-        }
+        
 
         scroller = new javax.swing.JScrollPane(taskTable);
         taskTable.setPreferredScrollableViewportSize(new java.awt.Dimension(500, 300));
@@ -105,16 +106,17 @@ class ApplicationWindow extends JFrame {
         addButton    = new JButton("Add Task");
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                //String[] task = {"", "", "", ""};
-                //taskTableModel.addRow(task);                
+                if ( ! taskTableModel.hasEmptyRow()) {
+                    taskTableModel.addEmptyRow();
+                }                
             }
         });
 
         removeButton = new JButton("Remove Task");
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                //int rowIndex = taskTable.getSelectedRow();
-                //taskTableModel.removeRow(rowIndex);
+                int rowIndex = taskTable.getSelectedRow();
+                taskTableModel.removeRow(rowIndex);
             }
         });
 
@@ -123,6 +125,10 @@ class ApplicationWindow extends JFrame {
         inputPanel.add(removeButton);
     }
 
+    /**
+     * [highlightLastRow description]
+     * @param row [description]
+     */
     public void highlightLastRow(int row) {
         int lastrow = taskTableModel.getRowCount();
         if (row == lastrow - 1) {
@@ -135,6 +141,9 @@ class ApplicationWindow extends JFrame {
     }
 
 
+    /**
+     * 
+     */
     class TaskRenderer extends DefaultTableCellRenderer {
         
         protected int taskColumn;
@@ -168,32 +177,37 @@ class ApplicationWindow extends JFrame {
 
     }
 
-
+    /**
+     * 
+     */
     public class TaskTableModelListener implements TableModelListener {
 
         public void tableChanged(TableModelEvent evt) {
-            if (evt.getType() == TableModelEvent.UPDATE) {
-                int column = evt.getColumn();
-                int row = evt.getFirstRow();
+            int column = evt.getColumn();
+            int row    = evt.getFirstRow();
+
+            if (evt.getType() == TableModelEvent.INSERT) {
+                taskTable.setRowSelectionInterval(row, row);
+                taskTable.scrollRectToVisible(taskTable.getCellRect(taskTable.getRowCount()-1, 0, true));
+            }
+            else if (evt.getType() == TableModelEvent.UPDATE) {
                 System.out.println("row: " + row + " column: " + column);
                 taskTable.setColumnSelectionInterval(column + 1, column + 1);
+                taskTable.setRowSelectionInterval(row, row);
+            }
+            else if (evt.getType() == TableModelEvent.DELETE) {
+                System.out.println("DELETE row: " + row + " column: " + column);
+                row = (row == 0)  ? row : (row - 1);
                 taskTable.setRowSelectionInterval(row, row);
             }
         }
 
     }
 
-
+    /**
+     * 
+     */
     public class Dbsn {
-        // private static Dbsn instance;
-
-        // public static synchronized Dbsn getInstance() {
-        //     if (instance == null) {
-        //         instance = new Dbsn();
-        //     }
-        //     return instance;
-        // }
-
 
         private int dbh;
 
@@ -226,8 +240,7 @@ class ApplicationWindow extends JFrame {
                 DbsnLibrary.INSTANCE.setNom(dbh, i);
                 DbsnLibrary.INSTANCE.getFragm(dbh, fragm, fragm.length);
                 String text = new String(fragm).trim();
-                System.out.println(text);
-                Task aTask = new Task(i, 0, text);
+                Task aTask  = new Task(i, 0, text);
                 data.add(aTask);
             }
 
