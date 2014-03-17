@@ -6,6 +6,8 @@ import java.util.Date;
 // public class Task extends Observable {
 public class Task {
 
+    private boolean hasChanged = false;
+
     private int     id;
     private int     parentId;
     private String  text;
@@ -29,25 +31,41 @@ public class Task {
     }
 
     public void setText(String text) {
-        this.text = text;
+        if (text == null ? this.text == null : text.equals(this.text)) {
+            return;            
+        }
+        this.text       = text;
+        this.hasChanged = true;
         // setChanged();
         // notifyObservers();
     }
 
     public void setParentId(int parentId) {
-        this.parentId = parentId;
+        if (parentId == 0 ? this.parentId == 0 : this.parentId == parentId) {
+            return;            
+        }
+        this.parentId   = parentId;
+        this.hasChanged = true;
         // setChanged();
         // notifyObservers();
     }
 
     public void setCreationDate(Date creationDate) {
+        if (creationDate == null ? this.creationDate == null : creationDate.equals(this.creationDate)) {
+            return;            
+        }
         this.creationDate = creationDate;
+        this.hasChanged   = true;
         // setChanged();
         // notifyObservers();
     }
 
     public void setCompletionDate(Date completionDate) {
+        if (completionDate == null ? this.completionDate == null : completionDate.equals(this.completionDate)) {
+            return;            
+        }
         this.completionDate = completionDate;
+        this.hasChanged     = true;
         // setChanged();
         // notifyObservers();
     }

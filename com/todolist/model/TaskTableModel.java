@@ -38,7 +38,7 @@ public class TaskTableModel extends AbstractTableModel {
     
     @Override
     public boolean isCellEditable(int row, int column) {
-        if (column == HIDDEN_INDEX)  {
+        if (column == HIDDEN_INDEX || column == ID_INDEX)  {
             return false;
         }
         return true;

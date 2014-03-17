@@ -116,7 +116,8 @@ class ApplicationWindow extends JFrame {
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 int rowIndex = taskTable.getSelectedRow();
-                taskTableModel.removeRow(rowIndex);
+                int modelRow = taskTable.convertRowIndexToModel(rowIndex);
+                taskTableModel.removeRow(modelRow);
             }
         });
 
