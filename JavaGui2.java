@@ -53,6 +53,9 @@ class ApplicationWindow extends JFrame {
     private JButton            addButton;
     private JButton            removeButton;
     private JButton            saveButton;
+    private JButton            refreshButton;
+
+    private Dbsn               db = new Dbsn();
     
 
     public ApplicationWindow(String title)
@@ -83,11 +86,7 @@ class ApplicationWindow extends JFrame {
      */
     private void initComponents()
     {
-        Dbsn db = new Dbsn();
-        db.connectToDbsn("resources/TestDBSN");
-        taskTableData = db.loadData();
-        db.disconnectFromDbsn();
-
+        taskTableData  = loadDataFromDbsn();
         taskTableModel = new TaskTableModel(taskTableData);
         taskTableModel.addTableModelListener(new ApplicationWindow.TaskTableModelListener());
         taskTable = new JTable();
@@ -124,15 +123,19 @@ class ApplicationWindow extends JFrame {
 
         saveButton = new JButton("Save changes");
         saveButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                Vector<Task> changedTask = taskTableModel.getChangedTask();
+            public void actionPerformed(ActionEvent event) {                
+                saveDataToDbsn(
+                        taskTableModel.getChangedTask()
+                    ,   taskTableModel.getRemovedTask() 
+                );
+            }
+        });
 
-                Dbsn db = new Dbsn();
-                db.connectToDbsn("resources/TestDBSN");
-                for (Task t : changedTask) {
-                    db.saveTask(t);
-                }
-                db.disconnectFromDbsn();
+        refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                taskTableData = loadDataFromDbsn();
+                taskTableModel.setData(taskTableData);
             }
         });
 
@@ -140,6 +143,33 @@ class ApplicationWindow extends JFrame {
         inputPanel.add(addButton);
         inputPanel.add(removeButton);
         inputPanel.add(saveButton);
+        inputPanel.add(refreshButton);
+    }
+
+    /**
+     * [loadDataFromDbsn description]
+     * @return [description]
+     */
+    private Vector<Task> loadDataFromDbsn() {
+        db.connectToDbsn("resources/TestDBSN");
+        Vector<Task> data = db.loadData();
+        db.disconnectFromDbsn();
+        return data;
+    }
+
+    /**
+     * [saveDataToDbsn description]
+     * @param changedTask [description]
+     */
+    private void saveDataToDbsn(Vector<Task> changedTask, Vector<Task> removedTask) {
+        db.connectToDbsn("resources/TestDBSN");
+        for (Task t : changedTask) {
+            db.saveTask(t);
+        }
+        for (Task t : removedTask) {            
+            db.removeTask(t);
+        }
+        db.disconnectFromDbsn();
     }
 
     /**
@@ -203,23 +233,23 @@ class ApplicationWindow extends JFrame {
             int column = evt.getColumn();
             int row    = evt.getFirstRow();
 
-            if (evt.getType() == TableModelEvent.INSERT) {
-                taskTable.setRowSelectionInterval(row, row);
+            if (evt.getType() == TableModelEvent.INSERT) {                
+                System.out.println("INSERT ROW: " + row + " column: " + column);
                 taskTable.scrollRectToVisible(taskTable.getCellRect(taskTable.getRowCount()-1, 0, true));
             }
             else if (evt.getType() == TableModelEvent.UPDATE) {
-                System.out.println("row: " + row + " column: " + column);
+                System.out.println("UPDATE ROW: " + row + " column: " + column);
                 taskTable.setColumnSelectionInterval(column + 1, column + 1);
-                taskTable.setRowSelectionInterval(row, row);
             }
             else if (evt.getType() == TableModelEvent.DELETE) {
                 System.out.println("DELETE row: " + row + " column: " + column);
                 row = (row == 0)  ? row : (row - 1);
-                taskTable.setRowSelectionInterval(row, row);
             }
+            taskTable.setRowSelectionInterval(row, row);
         }
 
     }
+
 
     /**
      * 
@@ -232,19 +262,20 @@ class ApplicationWindow extends JFrame {
             dbh = DbsnLibrary.INSTANCE.openDBSN(dbsnPath);
         }
 
-        public void removeTaskFromDbsn(int taskId) {
-            DbsnLibrary.INSTANCE.setNom(dbh, taskId);
-            DbsnLibrary.INSTANCE.delFragm(dbh);
-        }
-
-        public boolean isConnectedDbsn() {
-            return dbh > 0;
-        }
-
         public void disconnectFromDbsn() {
             DbsnLibrary.INSTANCE.flushDBSN(dbh);
             DbsnLibrary.INSTANCE.closeDBSN(dbh);
         }
+
+        public void removeTask(Task task) {
+            System.out.println("Task id = "+task.getId());
+            
+            int res = DbsnLibrary.INSTANCE.setNom(dbh, task.getId());
+            System.out.println("res = "+res);
+            
+            res = DbsnLibrary.INSTANCE.cutFragm(dbh);
+            System.out.println("res = "+res);
+        }        
 
         public void saveTask(Task task) {
             DbsnLibrary.INSTANCE.setNom(dbh, task.getId());
@@ -254,7 +285,6 @@ class ApplicationWindow extends JFrame {
         public Vector<Task> loadData()
         {
             int rowCount = DbsnLibrary.INSTANCE.countFragm(dbh);
-
             Vector<Task> data = new Vector<Task>();
             for(int i = 1; i <= rowCount; i++)
             {
@@ -265,7 +295,6 @@ class ApplicationWindow extends JFrame {
                 Task aTask  = new Task(i, 0, text);
                 data.add(aTask);
             }
-
             return data;
         } 
     }

@@ -10,6 +10,7 @@ public interface DbsnLibrary extends Library {
 
     int createDBSN    (String fil_name);
     int openDBSN      (String fil_name);
+    int packDBSN      (String fil_name);
     int flushDBSN     (int dbhadr); 
     int closeDBSN     (int dbhadr);
     int setNom        (int dbhadr, int new_nom);
@@ -18,4 +19,5 @@ public interface DbsnLibrary extends Library {
     int setFragm      (int dbhadr, String fragm);
     int addFragm      (int dbhadr, String fragm);
     int delFragm      (int dbhadr);
+    int cutFragm      (int dbhadr);
 }

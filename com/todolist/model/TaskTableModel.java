@@ -15,13 +15,20 @@ public class TaskTableModel extends AbstractTableModel {
 
     protected String[]        columnNames = {"Id", "Text", "Created At", "Complited To", ""};    
     protected Vector<Task>    dataVector  = new Vector<Task>();
-    protected Vector<Task>    changed     = new Vector<Task>();
-    protected Vector<Task>    removed     = new Vector<Task>();
+    protected Vector<Task>    bufferData;
+
 
     public TaskTableModel(Vector<Task> dataVector) {
         super();
         this.dataVector = dataVector;
+        this.bufferData = new Vector<Task>(dataVector);
     }
+
+    public void setData(Vector<Task> dataVector) {  
+        this.dataVector = dataVector;  
+        this.bufferData = new Vector<Task>(dataVector);
+        fireTableDataChanged();  
+    }  
 
     @Override
     public int getColumnCount() {
@@ -127,6 +134,7 @@ public class TaskTableModel extends AbstractTableModel {
      * @return [description]
      */
     public Vector<Task> getChangedTask() {
+        Vector<Task> changed = new Vector<Task>();
         for (Task t : dataVector) {
             if (t.hasChanged()) {
                 changed.add(t);
@@ -136,6 +144,12 @@ public class TaskTableModel extends AbstractTableModel {
     }
 
     public Vector<Task> getRemovedTask() {
+        Vector<Task> removed = new Vector<Task>();
+        for (Task t : bufferData) {
+            if ( ! dataVector.contains(t)) {
+                removed.add(t);
+            }
+        }
         return removed;
     }
 
@@ -178,8 +192,8 @@ public class TaskTableModel extends AbstractTableModel {
      */
     public void removeRow(int row)
     {
-        //removed.add(t);
         dataVector.remove(row);
         fireTableRowsDeleted(row, row);
     }
+
 }
