@@ -52,6 +52,7 @@ class ApplicationWindow extends JFrame {
     private JScrollPane        scroller;
     private JButton            addButton;
     private JButton            removeButton;
+    private JButton            saveButton;
     
 
     public ApplicationWindow(String title)
@@ -121,9 +122,24 @@ class ApplicationWindow extends JFrame {
             }
         });
 
+        saveButton = new JButton("Save changes");
+        saveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                Vector<Task> changedTask = taskTableModel.getChangedTask();
+
+                Dbsn db = new Dbsn();
+                db.connectToDbsn("resources/TestDBSN");
+                for (Task t : changedTask) {
+                    db.saveTask(t);
+                }
+                db.disconnectFromDbsn();
+            }
+        });
+
         inputPanel = new JPanel();
         inputPanel.add(addButton);
         inputPanel.add(removeButton);
+        inputPanel.add(saveButton);
     }
 
     /**
@@ -230,12 +246,17 @@ class ApplicationWindow extends JFrame {
             DbsnLibrary.INSTANCE.closeDBSN(dbh);
         }
 
+        public void saveTask(Task task) {
+            DbsnLibrary.INSTANCE.setNom(dbh, task.getId());
+            DbsnLibrary.INSTANCE.setFragm(dbh, task.getText());
+        }
+
         public Vector<Task> loadData()
         {
             int rowCount = DbsnLibrary.INSTANCE.countFragm(dbh);
 
             Vector<Task> data = new Vector<Task>();
-            for(int i = 0; i < rowCount; i++)
+            for(int i = 1; i <= rowCount; i++)
             {
                 byte[] fragm = new byte[32567];
                 DbsnLibrary.INSTANCE.setNom(dbh, i);

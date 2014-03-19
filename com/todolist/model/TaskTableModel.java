@@ -15,6 +15,8 @@ public class TaskTableModel extends AbstractTableModel {
 
     protected String[]        columnNames = {"Id", "Text", "Created At", "Complited To", ""};    
     protected Vector<Task>    dataVector  = new Vector<Task>();
+    protected Vector<Task>    changed     = new Vector<Task>();
+    protected Vector<Task>    removed     = new Vector<Task>();
 
     public TaskTableModel(Vector<Task> dataVector) {
         super();
@@ -102,6 +104,45 @@ public class TaskTableModel extends AbstractTableModel {
         fireTableCellUpdated(row, column);
     }
 
+    /**
+     * [addTask description]
+     * @param task [description]
+     */
+    public void addTask(Task task) {
+        dataVector.add(task);
+        fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
+    }
+
+    /**
+     * [getTaskAt description]
+     * @param  row [description]
+     * @return     [description]
+     */
+    public Task getTaskAt(int row) {
+        return dataVector.get(row);
+    }
+
+    /**
+     * [getChangedPeople description]
+     * @return [description]
+     */
+    public Vector<Task> getChangedTask() {
+        for (Task t : dataVector) {
+            if (t.hasChanged()) {
+                changed.add(t);
+            }
+        }
+        return changed;    
+    }
+
+    public Vector<Task> getRemovedTask() {
+        return removed;
+    }
+
+    /**
+     * [hasEmptyRow description]
+     * @return [description]
+     */
     public boolean hasEmptyRow()
     {
         if (dataVector.size() == 0) {
@@ -122,13 +163,22 @@ public class TaskTableModel extends AbstractTableModel {
         }
     }
 
+    /**
+     * [addEmptyRow description]
+     */
     public void addEmptyRow() {
-        dataVector.add(new Task());
+        Task task = new Task(dataVector.size(), 0, "");
+        dataVector.add(task);
         fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
     }
 
+    /**
+     * [removeRow description]
+     * @param row [description]
+     */
     public void removeRow(int row)
     {
+        //removed.add(t);
         dataVector.remove(row);
         fireTableRowsDeleted(row, row);
     }

@@ -89,4 +89,8 @@ public class Task {
     public Date getCompletionDate() {
         return completionDate;
     }
+
+    public boolean hasChanged() {
+        return hasChanged;
+    }
 }
