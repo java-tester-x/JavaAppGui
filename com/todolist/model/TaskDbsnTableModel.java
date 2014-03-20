@@ -143,10 +143,6 @@ public class TaskTableModel extends AbstractTableModel {
         return changed;    
     }
 
-    /**
-     * [getRemovedTask description]
-     * @return [description]
-     */
     public Vector<Task> getRemovedTask() {
         Vector<Task> removed = new Vector<Task>();
         for (Task t : bufferData) {
@@ -155,20 +151,6 @@ public class TaskTableModel extends AbstractTableModel {
             }
         }
         return removed;
-    }
-
-    /**
-     * [getCreatedTask description]
-     * @return [description]
-     */
-    public Vector<Task> getCreatedTask() {
-        Vector<Task> created = new Vector<Task>();
-        for (Task t : dataVector) {
-            if ( ! bufferData.contains(t)) {
-                created.add(t);
-            }
-        }
-        return created;
     }
 
     /**
@@ -199,7 +181,7 @@ public class TaskTableModel extends AbstractTableModel {
      * [addEmptyRow description]
      */
     public void addEmptyRow() {
-        Task task = new Task(0, 0, "");
+        Task task = new Task(dataVector.size(), 0, "");
         dataVector.add(task);
         fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
     }

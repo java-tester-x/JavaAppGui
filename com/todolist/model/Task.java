@@ -93,4 +93,8 @@ public class Task {
     public boolean hasChanged() {
         return hasChanged;
     }
+
+    public void resetChangedFlag() {
+        hasChanged = false;    
+    }
 }

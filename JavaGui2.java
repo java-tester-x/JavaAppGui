@@ -125,7 +125,8 @@ class ApplicationWindow extends JFrame {
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {                
                 saveDataToDbsn(
-                        taskTableModel.getChangedTask()
+                        taskTableModel.getCreatedTask()
+                    ,   taskTableModel.getChangedTask()
                     ,   taskTableModel.getRemovedTask() 
                 );
             }
@@ -161,13 +162,21 @@ class ApplicationWindow extends JFrame {
      * [saveDataToDbsn description]
      * @param changedTask [description]
      */
-    private void saveDataToDbsn(Vector<Task> changedTask, Vector<Task> removedTask) {
+    private void saveDataToDbsn(Vector<Task> createdTask
+                              , Vector<Task> changedTask
+                              , Vector<Task> removedTask)
+    {
         db.connectToDbsn("resources/TestDBSN");
         for (Task t : changedTask) {
-            db.saveTask(t);
+            db.updateTask(t);
+            t.resetChangedFlag();
         }
-        for (Task t : removedTask) {            
+        for (Task t : removedTask) {
             db.removeTask(t);
+        }
+        for (Task t : createdTask) {
+            db.addTask(t);
+            t.resetChangedFlag();
         }
         db.disconnectFromDbsn();
     }
@@ -267,19 +276,18 @@ class ApplicationWindow extends JFrame {
             DbsnLibrary.INSTANCE.closeDBSN(dbh);
         }
 
-        public void removeTask(Task task) {
-            System.out.println("Task id = "+task.getId());
-            
-            int res = DbsnLibrary.INSTANCE.setNom(dbh, task.getId());
-            System.out.println("res = "+res);
-            
-            res = DbsnLibrary.INSTANCE.cutFragm(dbh);
-            System.out.println("res = "+res);
-        }        
+        public void addTask(Task task) {
+            DbsnLibrary.INSTANCE.addFragm(dbh, task.getText());
+        }
 
-        public void saveTask(Task task) {
+        public void updateTask(Task task) {
             DbsnLibrary.INSTANCE.setNom(dbh, task.getId());
             DbsnLibrary.INSTANCE.setFragm(dbh, task.getText());
+        }
+
+        public void removeTask(Task task) {
+            DbsnLibrary.INSTANCE.setNom(dbh, task.getId());
+            DbsnLibrary.INSTANCE.cutFragm(dbh);
         }
 
         public Vector<Task> loadData()
