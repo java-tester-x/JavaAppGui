@@ -12,8 +12,9 @@ public class TaskTableModel extends AbstractTableModel {
     public static final int CREATED_AT_INDEX   = 2;
     public static final int COMPLITED_TO_INDEX = 3;
     public static final int HIDDEN_INDEX       = 4;
+    public static final int HIDDEN_INDEX2      = 5;
 
-    protected String[]        columnNames = {"Id", "Text", "Created At", "Complited To", ""};    
+    protected String[]        columnNames = {"Id", "Text", "Created At", "Complited To", "", ""};    
     protected Vector<Task>    dataVector  = new Vector<Task>();
     protected Vector<Task>    bufferData;
 
@@ -47,7 +48,7 @@ public class TaskTableModel extends AbstractTableModel {
     
     @Override
     public boolean isCellEditable(int row, int column) {
-        if (column == HIDDEN_INDEX || column == ID_INDEX)  {
+        if (column == HIDDEN_INDEX || column == ID_INDEX || column == HIDDEN_INDEX2)  {
             return false;
         }
         return true;
@@ -93,7 +94,6 @@ public class TaskTableModel extends AbstractTableModel {
         Task task = (Task) dataVector.get(row);
         switch (column) {
             case ID_INDEX:
-                // int id = (Integer) value;
                 task.setId((Integer) value);
                 break;
             case TEXT_INDEX:

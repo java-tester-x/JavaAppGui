@@ -92,9 +92,15 @@ class ApplicationWindow extends JFrame {
         taskTable = new JTable();
         taskTable.setModel(taskTableModel);
         taskTable.setSurrendersFocusOnKeystroke(true);
-        
 
-        scroller = new javax.swing.JScrollPane(taskTable);
+        //TODO: разобраться!
+        //
+        //BufferedImage buttonIcon = ImageIO.read(new File("buttonIconPath"));
+        //button = new JButton(new ImageIcon(buttonIcon));
+        //button.setBorder(BorderFactory.createEmptyBorder());
+        //button.setContentAreaFilled(false);
+
+        scroller = new JScrollPane(taskTable);
         taskTable.setPreferredScrollableViewportSize(new java.awt.Dimension(500, 300));
         TableColumn hidden = taskTable.getColumnModel().getColumn(TaskTableModel.HIDDEN_INDEX);
         hidden.setMinWidth(2);
@@ -181,21 +187,6 @@ class ApplicationWindow extends JFrame {
         db.disconnectFromDbsn();
     }
 
-    /**
-     * [highlightLastRow description]
-     * @param row [description]
-     */
-    public void highlightLastRow(int row) {
-        int lastrow = taskTableModel.getRowCount();
-        if (row == lastrow - 1) {
-            taskTable.setRowSelectionInterval(lastrow - 1, lastrow - 1);
-        } else {
-            taskTable.setRowSelectionInterval(row + 1, row + 1);
-        }
-
-        taskTable.setColumnSelectionInterval(0, 0);
-    }
-
 
     /**
      * 
@@ -229,6 +220,20 @@ class ApplicationWindow extends JFrame {
             }
 
             return c;
+        }
+
+        /**
+         * [highlightLastRow description]
+         * @param row [description]
+         */
+        public void highlightLastRow(int row) {
+            int lastrow = ApplicationWindow.this.taskTableModel.getRowCount();
+            if (row == lastrow - 1) {
+                ApplicationWindow.this.taskTable.setRowSelectionInterval(lastrow - 1, lastrow - 1);
+            } else {
+                ApplicationWindow.this.taskTable.setRowSelectionInterval(row + 1, row + 1);
+            }
+            ApplicationWindow.this.taskTable.setColumnSelectionInterval(0, 0);
         }
 
     }
