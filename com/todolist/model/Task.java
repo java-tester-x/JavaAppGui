@@ -1,7 +1,6 @@
 package com.todolist.model;
 
 import java.util.Date;
-// import java.util.Observable;
 
 // public class Task extends Observable {
 public class Task {

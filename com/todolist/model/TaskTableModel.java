@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Collection;
 import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.JButton;
 
 public class TaskTableModel extends AbstractTableModel {
 
@@ -18,6 +19,12 @@ public class TaskTableModel extends AbstractTableModel {
     protected Vector<Task>    dataVector  = new Vector<Task>();
     protected Vector<Task>    bufferData;
 
+    private Dbsn              db = new Dbsn("resources/TestDBSN");
+
+    public TaskTableModel() {
+        super();
+        load();
+    }
 
     public TaskTableModel(Vector<Task> dataVector) {
         super();
@@ -30,6 +37,11 @@ public class TaskTableModel extends AbstractTableModel {
         this.bufferData = new Vector<Task>(dataVector);
         fireTableDataChanged();  
     }  
+
+    public void refreshData() {
+        load();
+        fireTableDataChanged();
+    }
 
     @Override
     public int getColumnCount() {
@@ -65,6 +77,8 @@ public class TaskTableModel extends AbstractTableModel {
                 return Integer.class;
             case TEXT_INDEX:
                 return String.class;
+            case HIDDEN_INDEX2:
+                return JButton.class;
             default: 
                 return Object.class;
         }
@@ -83,6 +97,9 @@ public class TaskTableModel extends AbstractTableModel {
                 return task.getCreationDate();
             case COMPLITED_TO_INDEX:
                 return task.getCompletionDate();
+            case HIDDEN_INDEX2:
+                JButton button = new JButton();
+                return button;
             default:
                 return new Object();
         }
@@ -215,12 +232,32 @@ public class TaskTableModel extends AbstractTableModel {
     }
 
 
-    public void load() {
-        //
+    /**
+     * [loadDataFromDbsn description]
+     * @return [description]
+     */
+    private void load() {
+        dataVector = db.loadData();
+        bufferData = new Vector<Task>(dataVector);
     }
 
-    public void save() {
-        //
+    /**
+     * [saveDataToDbsn description]
+     * @param changedTask [description]
+     */
+    public void save()
+    {
+        for (Task t : getChangedTask()) {
+            db.updateTask(t);
+            t.resetChangedFlag();
+        }
+        for (Task t : getRemovedTask()) {
+            db.removeTask(t);
+        }
+        for (Task t : getCreatedTask()) {
+            db.addTask(t);
+            t.resetChangedFlag();
+        }
+        db.flushDbsn();
     }
-
 }

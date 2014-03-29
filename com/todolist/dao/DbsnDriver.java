@@ -1,12 +1,12 @@
 
-package com.todolist.util;
+package com.todolist.dao;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 
-public interface DbsnLibrary extends Library {        
-    DbsnLibrary INSTANCE = (DbsnLibrary) Native.loadLibrary("lib/dbsn", DbsnLibrary.class);
+public interface DbsnDriver extends Library {        
+    DbsnDriver INSTANCE = (DbsnDriver) Native.loadLibrary("lib/dbsn", DbsnDriver.class);
 
     int createDBSN    (String fil_name);
     int openDBSN      (String fil_name);
