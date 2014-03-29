@@ -15,6 +15,95 @@ public class TaskTableModel extends AbstractTableModel {
     public static final int HIDDEN_INDEX       = 4;
     public static final int HIDDEN_INDEX2      = 5;
 
+    /**
+     * Represents a column of the table.
+     */
+    // static enum Column {
+    //     ID("Id") {
+    //         @Override public Object getValue(Task task) {
+    //             return task.getId();
+    //         }
+    //         @Override public Class getColumnClass() {
+    //             return Integer.class;
+    //         }
+    //         @Override public int getWidthInCharacters() {
+    //             return 10;
+    //         }
+    //     },
+
+    //     TEXT("Text") {
+    //         @Override public Object getValue(Task task) {
+    //             return task.getText();
+    //             }
+    //         @Override public Class getColumnClass() {
+    //             return String.class;
+    //         }
+    //         @Override public int getWidthInCharacters() {
+    //             return 20;
+    //         }
+    //     },
+
+    //     CREATED_AT("Created At") {
+    //         @Override public Object getValue(Task task) {
+    //             return task.getCreationDate();
+    //         }
+
+    //         @Override public Class getColumnClass() {
+    //             return Date.class;
+    //         }
+
+    //         @Override public int getWidthInCharacters() {
+    //             return 25;
+    //         }
+    //     },
+
+    //     COMPLITED_TO("Complited To") {
+    //         @Override public Object getValue(Task task) {
+    //             return task.getComplitionDate();
+    //         }
+
+    //         @Override public Class getColumnClass() {
+    //             return Date.class;
+    //         }
+
+    //         @Override public int getWidthInCharacters() {
+    //             return 25;
+    //         }
+    //     },
+
+        
+    //     private String displayName;
+
+    //     private Column(String displayName) {
+    //         assert displayName != null && displayName.length() > 0;
+    //         this.displayName = displayName;
+    //     }
+
+    //     public String getDisplayName() {
+    //         return displayName;
+    //     }
+
+    //     /**
+    //      * Return the value for this column for the specified
+    //      * person.
+    //      */
+    //     public abstract Object getValue(Person person);
+
+    //     /**
+    //      * Return the class of Object returned by this column.
+    //      */
+    //     public Class getColumnClass() {
+    //       return String.class; // Default value
+    //     }
+
+    //     /**
+    //      * Return the number of characters needed to display the
+    //      * header and data for this column.
+    //      */
+    //     public abstract int getWidthInCharacters();
+    // }
+
+
     protected String[]        columnNames = {"Id", "Text", "Created At", "Complited To", "", ""};    
     protected Vector<Task>    dataVector  = new Vector<Task>();
     protected Vector<Task>    bufferData;
