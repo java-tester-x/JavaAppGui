@@ -3,6 +3,7 @@ import java.awt.event.*;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
+import static javax.swing.GroupLayout.Alignment.*;
 import javax.swing.table.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -43,6 +44,9 @@ class ApplicationWindow extends JFrame {
 	public static final int WINDOW_WIDTH  = 640;
 	public static final int WINDOW_HEIGHT = 480;
 
+    private Container          mainContentPane;
+    private GroupLayout        layout;
+
     private TaskTableModel     taskTableModel;
     private JTable             taskTable;
     private JPanel             inputPanel;
@@ -52,23 +56,33 @@ class ApplicationWindow extends JFrame {
     private JButton            refreshButton;
     private BufferedImage      removeButtonIcon;
 
+    private JLabel             findLabel     = new JLabel("Find What:");;
+    private JTextField         findText      = new JTextField();
+    private JCheckBox          caseCheckBox  = new JCheckBox("Match Case");
+    private JCheckBox          wrapCheckBox  = new JCheckBox("Wrap Around");
+    private JCheckBox          wholeCheckBox = new JCheckBox("Whole Words");
+    private JCheckBox          backCheckBox  = new JCheckBox("Search Backwards");
+    private JButton            findButton    = new JButton("Find");
+    private JButton            testButton    = new JButton("Test");
+
     public ApplicationWindow(String title)
     {
-		Container contentPane = this.getContentPane();
+		mainContentPane = this.getContentPane();
 
 		// Content-pane sets layout
-		// cp.setLayout(new ....Layout());
-
+		// cp.setLayout(new ....Layout());        
+        layout = new GroupLayout(mainContentPane);
+        mainContentPane.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+        
 		// Allocate the UI components
         initComponents();   
 
 		// Content-pane adds components
-        contentPane.add(scroller, BorderLayout.CENTER);   
-        contentPane.add(inputPanel, BorderLayout.NORTH);   
+        mainContentPane.add(scroller, BorderLayout.CENTER);   
+        mainContentPane.add(inputPanel, BorderLayout.NORTH);   
 
-		// Source object adds listener
-		// .....
-      
         pack();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);       
         setTitle(title);
@@ -118,8 +132,31 @@ class ApplicationWindow extends JFrame {
 
         inputPanel = new JPanel();
         inputPanel.add(addButton);
-        inputPanel.add(refreshButton);
         inputPanel.add(saveButton);
+        inputPanel.add(refreshButton);
+
+        layout.setHorizontalGroup(layout.createParallelGroup()
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(findLabel)
+                .addComponent(findText)
+                .addComponent(findButton)
+            )
+            .addComponent(scroller)
+            .addComponent(inputPanel)
+        );        
+        layout.setVerticalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(findLabel)
+                .addComponent(findText)
+                .addComponent(findButton)
+            )
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)                
+                .addComponent(scroller)
+            )
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)                
+                .addComponent(inputPanel)
+            )
+        );
     }
 
     /**
