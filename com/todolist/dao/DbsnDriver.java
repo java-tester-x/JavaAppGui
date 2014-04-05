@@ -20,4 +20,9 @@ public interface DbsnDriver extends Library {
     int addFragm      (int dbhadr, String fragm);
     int delFragm      (int dbhadr);
     int cutFragm      (int dbhadr);
+
+    int substCount    (String pc);
+    int getSubst      (String pc, byte[] pcbuf, int buf_sze, int nom_sub);
+    int addSubst      (String pc, byte[] pcres, int res_size, String pcsubst);
+    int insSubst      (String pc, byte[] pcres, int res_size, int nom_sub, String pcsubst);
 }

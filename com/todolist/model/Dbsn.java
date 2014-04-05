@@ -1,6 +1,7 @@
 package com.todolist.model;
 
 import java.util.Vector;
+
 import com.todolist.dao.DbsnDriver;
 
 public class Dbsn {
@@ -8,36 +9,36 @@ public class Dbsn {
     private int dbh;
 
     public Dbsn(String dbsnPath) {
-        this.connectToDbsn(dbsnPath);
+        this.connect(dbsnPath);
     }
 
 
-    public void connectToDbsn(String dbsnPath) {
+    public void connect(String dbsnPath) {
         dbh = DbsnDriver.INSTANCE.openDBSN(dbsnPath);
     }
 
-    public void flushDbsn() {
+    public void flush() {
         DbsnDriver.INSTANCE.flushDBSN(dbh);
     }
 
-    public void disconnectFromDbsn() {
-        flushDbsn();
+    public void disconnect() {
+        flush();
         DbsnDriver.INSTANCE.closeDBSN(dbh);
     }
 
     public void addTask(Task task) {
-        DbsnDriver.INSTANCE.addFragm(dbh, task.getText());
+        DbsnDriver.INSTANCE.addFragm(dbh, task.toString());
     }
 
     public void updateTask(Task task) {
         DbsnDriver.INSTANCE.setNom(dbh, task.getId());
-        DbsnDriver.INSTANCE.setFragm(dbh, task.getText());
+        DbsnDriver.INSTANCE.setFragm(dbh, task.toString());
     }
 
     public void removeTask(Task task) {
         DbsnDriver.INSTANCE.setNom(dbh, task.getId());
         DbsnDriver.INSTANCE.cutFragm(dbh);
-    }
+    }    
 
     public Vector<Task> loadData()
     {
@@ -49,9 +50,12 @@ public class Dbsn {
             DbsnDriver.INSTANCE.setNom(dbh, i);
             DbsnDriver.INSTANCE.getFragm(dbh, fragm, fragm.length);
             String text = new String(fragm).trim();
-            Task aTask  = new Task(i, 0, text);
+            Task aTask  = new Task(text);
+            //Task aTask  = new Task(i, 0, text);
+            
             data.add(aTask);
         }
         return data;
-    } 
+    }
+    
 }

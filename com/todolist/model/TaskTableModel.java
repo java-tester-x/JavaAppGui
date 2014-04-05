@@ -149,7 +149,7 @@ public class TaskTableModel extends AbstractTableModel {
     
     @Override
     public boolean isCellEditable(int row, int column) {
-        if (column == HIDDEN_INDEX || column == ID_INDEX || column == HIDDEN_INDEX2)  {
+        if (column == HIDDEN_INDEX || column == HIDDEN_INDEX2)  {
             return false;
         }
         return true;
@@ -347,6 +347,6 @@ public class TaskTableModel extends AbstractTableModel {
             db.addTask(t);
             t.resetChangedFlag();
         }
-        db.flushDbsn();
+        db.flush();
     }
 }

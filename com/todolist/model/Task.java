@@ -1,6 +1,10 @@
 package com.todolist.model;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.*;
 import java.util.Date;
+
 
 // public class Task extends Observable {
 public class Task {
@@ -25,8 +29,26 @@ public class Task {
         this(0, 0, null);
     }
 
+    public Task(String s)
+    {
+        String[] fields = fields = s.replace("|", "::").split("::",-1);
+        try {
+            DateFormat df       = DateFormat.getDateInstance();                
+            this.id             = Integer.parseInt(fields[0]);
+            this.text           = fields[1];
+            this.creationDate   = df.parse(fields[2]);
+            this.completionDate = df.parse(fields[3]);
+            this.parentId       = 0;
+        }
+        catch (ParseException e) {}
+    }
+
     public void setId(int id) {
+        if (id == this.id) {
+            return;            
+        }
         this.id = id;
+        this.hasChanged = true;
     }
 
     public void setText(String text) {
@@ -96,4 +118,33 @@ public class Task {
     public void resetChangedFlag() {
         hasChanged = false;    
     }
+
+    public String toString()
+    {
+        List<String> list = new ArrayList<String>();
+        DateFormat   df   = DateFormat.getDateInstance();
+        list.add(Integer.toString(id));
+        list.add(text);
+        list.add((creationDate != null ? df.format(creationDate) : ""));
+        list.add((creationDate != null ? df.format(completionDate) : ""));
+
+        // Remove all empty values
+        // list.removeAll(Arrays.asList("", null));
+
+        // If this list is empty, it only contained blank values
+        if( list.isEmpty()) {
+            return "";
+        }
+
+        // Format the ArrayList as a string, similar to implode
+        StringBuilder builder = new StringBuilder();
+        builder.append( list.remove(0));
+        for( String s : list) {
+            builder.append("|");
+            builder.append(s);
+        }
+
+        return builder.toString();
+    }
+
 }

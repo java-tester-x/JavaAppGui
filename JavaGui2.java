@@ -9,12 +9,19 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.event.TableModelListener;
 import javax.swing.event.TableModelEvent;
-
 import java.io.IOException;
 import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.SqlDateModel;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+import net.sourceforge.jdatepicker.impl.UtilDateModel;
+
 
 import com.todolist.model.TaskTableModel;
 
@@ -56,12 +63,8 @@ class ApplicationWindow extends JFrame {
     private JButton            refreshButton;
     private BufferedImage      removeButtonIcon;
 
-    private JLabel             findLabel     = new JLabel("Find What:");;
+    private JLabel             findLabel     = new JLabel("Find:");;
     private JTextField         findText      = new JTextField();
-    private JCheckBox          caseCheckBox  = new JCheckBox("Match Case");
-    private JCheckBox          wrapCheckBox  = new JCheckBox("Wrap Around");
-    private JCheckBox          wholeCheckBox = new JCheckBox("Whole Words");
-    private JCheckBox          backCheckBox  = new JCheckBox("Search Backwards");
     private JButton            findButton    = new JButton("Find");
     private JButton            testButton    = new JButton("Test");
 
@@ -94,6 +97,11 @@ class ApplicationWindow extends JFrame {
      */
     private void initComponents()
     {
+        try {
+            removeButtonIcon = ImageIO.read(new File("resources/item-del.png"));
+        } catch (IOException e) {}
+
+
         taskTableModel = new TaskTableModel();
         taskTableModel.addTableModelListener(new ApplicationWindow.TaskTableModelListener());
         taskTable = new JTable();
@@ -116,17 +124,19 @@ class ApplicationWindow extends JFrame {
         buttonColumn.setMaxWidth(20);
         buttonColumn.setCellRenderer(new ButtonColumnRenderer());
 
-        try {
-            removeButtonIcon = ImageIO.read(new File("resources/item-del.png"));
-        } catch (IOException e) {}
-
-
-        addButton = new JButton("Add");
+        TableColumn idColumn = taskTable.getColumnModel().getColumn(TaskTableModel.ID_INDEX);
+        idColumn.setMinWidth(38);
+        idColumn.setPreferredWidth(38);
+        idColumn.setMaxWidth(38);
+        
+        TableColumn textColumn = taskTable.getColumnModel().getColumn(TaskTableModel.TEXT_INDEX);
+        //textColumn.setMinWidth(350);
+        textColumn.setPreferredWidth(350);
+        
+        addButton     = new JButton("Add");
         addButton.addActionListener(new AddTaskActionListener());
-
-        saveButton = new JButton("Save");
+        saveButton    = new JButton("Save");
         saveButton.addActionListener(new SaveDataActionListener());
-
         refreshButton = new JButton("Refresh");
         refreshButton.addActionListener(new LoadDataActionListener());
 
@@ -134,6 +144,18 @@ class ApplicationWindow extends JFrame {
         inputPanel.add(addButton);
         inputPanel.add(saveButton);
         inputPanel.add(refreshButton);
+
+        // UtilDateModel   model = new UtilDateModel();
+        // model.setDate(1990, 8, 24);
+        // model.setSelected(true); 
+        // JDatePanelImpl  datePanel  = new JDatePanelImpl(model);
+        // JDatePickerImpl datePicker = new JDatePickerImpl(datePanel);
+        // inputPanel.add(datePicker);
+
+
+        // TableColumn creationDateColumn = taskTable.getColumnModel().getColumn(TaskTableModel.CREATED_AT_INDEX);
+        // creationDateColumn.setCellEditor(new MyTableCellEditor());
+
 
         layout.setHorizontalGroup(layout.createParallelGroup()
             .addGroup(layout.createSequentialGroup()
@@ -200,11 +222,28 @@ class ApplicationWindow extends JFrame {
         }
     }
 
+    
+    class MyTableCellEditor extends AbstractCellEditor implements TableCellEditor
+    {
+        JComponent component = new JTextField();
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int rowIndex, int vColIndex)
+        {
+            ((JTextField) component).setText((String) value);
+
+            return component;
+        }
+
+        public Object getCellEditorValue() {
+            return ((JTextField) component).getText();
+        }
+    }
+
     /**
      * 
      */
-    class HiddenColumnRenderer extends DefaultTableCellRenderer {
-        
+    class HiddenColumnRenderer extends DefaultTableCellRenderer
+    {    
         protected int hiddenColumn;
 
         public HiddenColumnRenderer(int hiddenColumn) {
@@ -244,7 +283,8 @@ class ApplicationWindow extends JFrame {
     /**
      * 
      */
-    class ButtonColumnRenderer implements TableCellRenderer {        
+    class ButtonColumnRenderer implements TableCellRenderer
+    {        
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
         {
@@ -268,7 +308,8 @@ class ApplicationWindow extends JFrame {
     /**
      * 
      */
-    class JTableButtonMouseListener extends MouseAdapter {
+    class JTableButtonMouseListener extends MouseAdapter
+    {
         private final JTable table;
         
         public JTableButtonMouseListener(JTable table) {
@@ -292,8 +333,8 @@ class ApplicationWindow extends JFrame {
     /**
      * 
      */
-    public class TaskTableModelListener implements TableModelListener {
-
+    public class TaskTableModelListener implements TableModelListener
+    {
         public void tableChanged(TableModelEvent evt) {
             int column = evt.getColumn();
             int row    = evt.getFirstRow();
@@ -301,6 +342,7 @@ class ApplicationWindow extends JFrame {
             if (evt.getType() == TableModelEvent.INSERT) {                
                 System.out.println("INSERT ROW: " + row + " column: " + column);
                 taskTable.scrollRectToVisible(taskTable.getCellRect(taskTable.getRowCount()-1, 0, true));
+                taskTable.setRowSelectionInterval(row, row);
             }
             else if (evt.getType() == TableModelEvent.UPDATE) {
                 System.out.println("UPDATE ROW: " + row + " column: " + column);
@@ -308,9 +350,10 @@ class ApplicationWindow extends JFrame {
             }
             else if (evt.getType() == TableModelEvent.DELETE) {
                 System.out.println("DELETE row: " + row + " column: " + column);
-                row = (row == 0)  ? row : (row - 1);
+                if (row - 1 >= 0) {
+                    taskTable.setRowSelectionInterval(row - 1, row - 1);
+                }
             }
-            taskTable.setRowSelectionInterval(row, row);
         }
 
     }
