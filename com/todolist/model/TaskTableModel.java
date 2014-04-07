@@ -9,10 +9,12 @@ import javax.swing.JButton;
 public class TaskTableModel extends AbstractTableModel {
 
     public static final int ID_INDEX           = 0;
-    public static final int TEXT_INDEX         = 1;
-    public static final int CREATED_AT_INDEX   = 2;
-    public static final int COMPLITED_TO_INDEX = 3;
-    public static final int HIDDEN_INDEX       = 4;
+    public static final int ORDER_INDEX        = 1;
+    public static final int TEXT_INDEX         = 2;
+    public static final int CREATED_AT_INDEX   = 3;
+    public static final int COMPLITED_TO_INDEX = 4;
+
+    // public static final int HIDDEN_INDEX       = 5;
     public static final int HIDDEN_INDEX2      = 5;
 
     /**
@@ -104,7 +106,7 @@ public class TaskTableModel extends AbstractTableModel {
     // }
 
 
-    protected String[]        columnNames = {"Id", "Text", "Created At", "Complited To", "", ""};    
+    protected String[]        columnNames = {"", "Order", "Text", "Created At", "Complited To", ""};    
     protected Vector<Task>    dataVector  = new Vector<Task>();
     protected Vector<Task>    bufferData;
 
@@ -149,7 +151,7 @@ public class TaskTableModel extends AbstractTableModel {
     
     @Override
     public boolean isCellEditable(int row, int column) {
-        if (column == HIDDEN_INDEX || column == HIDDEN_INDEX2)  {
+        if (column == ID_INDEX || column == HIDDEN_INDEX2)  {
             return false;
         }
         return true;
@@ -163,6 +165,7 @@ public class TaskTableModel extends AbstractTableModel {
             case COMPLITED_TO_INDEX:
                 return Date.class;            
             case ID_INDEX:
+            case ORDER_INDEX: 
                 return Integer.class;
             case TEXT_INDEX:
                 return String.class;
@@ -180,6 +183,8 @@ public class TaskTableModel extends AbstractTableModel {
         switch (column) {
             case ID_INDEX:
                 return task.getId();
+            case ORDER_INDEX:
+                return task.getOrder();
             case TEXT_INDEX:
                 return task.getText();
             case CREATED_AT_INDEX:
@@ -200,7 +205,10 @@ public class TaskTableModel extends AbstractTableModel {
         Task task = (Task) dataVector.get(row);
         switch (column) {
             case ID_INDEX:
-                task.setId((Integer) value);
+                //task.setId((Integer) value);
+                break;
+            case ORDER_INDEX:
+                task.setOrder((Integer) value);
                 break;
             case TEXT_INDEX:
                 task.setText((String) value);
@@ -305,7 +313,7 @@ public class TaskTableModel extends AbstractTableModel {
      * [addEmptyRow description]
      */
     public void addEmptyRow() {
-        Task task = new Task(0, 0, "");
+        Task task = new Task("");
         dataVector.add(task);
         fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
     }
@@ -348,5 +356,6 @@ public class TaskTableModel extends AbstractTableModel {
             t.resetChangedFlag();
         }
         db.flush();
+        //bufferData = new Vector<Task>(dataVector);
     }
 }

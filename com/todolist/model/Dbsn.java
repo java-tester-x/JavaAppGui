@@ -1,8 +1,10 @@
 package com.todolist.model;
 
+import java.util.*;
 import java.util.Vector;
 
 import com.todolist.dao.DbsnDriver;
+
 
 public class Dbsn {
 
@@ -14,7 +16,9 @@ public class Dbsn {
 
 
     public void connect(String dbsnPath) {
+        DbsnDriver.INSTANCE.packDBSN(dbsnPath);        
         dbh = DbsnDriver.INSTANCE.openDBSN(dbsnPath);
+        flush();
     }
 
     public void flush() {
@@ -31,11 +35,13 @@ public class Dbsn {
     }
 
     public void updateTask(Task task) {
+        System.out.println("updateTask - "+task.getId());
         DbsnDriver.INSTANCE.setNom(dbh, task.getId());
         DbsnDriver.INSTANCE.setFragm(dbh, task.toString());
     }
 
     public void removeTask(Task task) {
+        System.out.println("removeTask - "+task.getId());
         DbsnDriver.INSTANCE.setNom(dbh, task.getId());
         DbsnDriver.INSTANCE.cutFragm(dbh);
     }    
@@ -50,7 +56,13 @@ public class Dbsn {
             DbsnDriver.INSTANCE.setNom(dbh, i);
             DbsnDriver.INSTANCE.getFragm(dbh, fragm, fragm.length);
             String text = new String(fragm).trim();
-            Task aTask  = new Task(text);
+
+            StringBuilder builder = new StringBuilder();
+            builder.append(i);
+            builder.append("|");
+            builder.append(text);
+
+            Task aTask  = new Task(builder.toString());
             //Task aTask  = new Task(i, 0, text);
             
             data.add(aTask);

@@ -2,18 +2,20 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
-import javax.swing.*;
+
 import static javax.swing.GroupLayout.Alignment.*;
+import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.event.TableModelListener;
 import javax.swing.event.TableModelEvent;
-import java.io.IOException;
-import java.io.File;
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.io.File;
 
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
@@ -112,11 +114,11 @@ class ApplicationWindow extends JFrame {
         scroller = new JScrollPane(taskTable);
         taskTable.setPreferredScrollableViewportSize(new java.awt.Dimension(500, 300));
         
-        TableColumn hidden = taskTable.getColumnModel().getColumn(TaskTableModel.HIDDEN_INDEX);
+        TableColumn hidden = taskTable.getColumnModel().getColumn(TaskTableModel.ID_INDEX);
         hidden.setMinWidth(2);
         hidden.setPreferredWidth(2);
         hidden.setMaxWidth(2);
-        hidden.setCellRenderer(new HiddenColumnRenderer(TaskTableModel.HIDDEN_INDEX));
+        hidden.setCellRenderer(new HiddenColumnRenderer(TaskTableModel.ID_INDEX));
 
         TableColumn buttonColumn = taskTable.getColumnModel().getColumn(TaskTableModel.HIDDEN_INDEX2);
         buttonColumn.setMinWidth(20);
@@ -124,7 +126,7 @@ class ApplicationWindow extends JFrame {
         buttonColumn.setMaxWidth(20);
         buttonColumn.setCellRenderer(new ButtonColumnRenderer());
 
-        TableColumn idColumn = taskTable.getColumnModel().getColumn(TaskTableModel.ID_INDEX);
+        TableColumn idColumn = taskTable.getColumnModel().getColumn(TaskTableModel.ORDER_INDEX);
         idColumn.setMinWidth(38);
         idColumn.setPreferredWidth(38);
         idColumn.setMaxWidth(38);
