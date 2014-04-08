@@ -161,16 +161,17 @@ public class TaskTableModel extends AbstractTableModel {
     public Class getColumnClass(int column)
     {
         switch (column) {
-            case CREATED_AT_INDEX:
-            case COMPLITED_TO_INDEX:
-                return Date.class;            
-            case ID_INDEX:
             case ORDER_INDEX: 
                 return Integer.class;
+            case ID_INDEX:
+                return String.class;
             case TEXT_INDEX:
                 return String.class;
             case HIDDEN_INDEX2:
                 return JButton.class;
+            case CREATED_AT_INDEX:
+            case COMPLITED_TO_INDEX:
+                return Date.class;            
             default: 
                 return Object.class;
         }
@@ -205,7 +206,7 @@ public class TaskTableModel extends AbstractTableModel {
         Task task = (Task) dataVector.get(row);
         switch (column) {
             case ID_INDEX:
-                //task.setId((Integer) value);
+                task.setId((String) value);
                 break;
             case ORDER_INDEX:
                 task.setOrder((Integer) value);
@@ -229,19 +230,19 @@ public class TaskTableModel extends AbstractTableModel {
      * [addTask description]
      * @param task [description]
      */
-    public void addTask(Task task) {
-        dataVector.add(task);
-        fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
-    }
+    // public void addTask(Task task) {
+    //     dataVector.add(task);
+    //     fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
+    // }
 
     /**
      * [getTaskAt description]
      * @param  row [description]
      * @return     [description]
      */
-    public Task getTaskAt(int row) {
-        return dataVector.get(row);
-    }
+    // public Task getTaskAt(int row) {
+    //     return dataVector.get(row);
+    // }
 
     /**
      * [getChangedPeople description]
@@ -296,8 +297,7 @@ public class TaskTableModel extends AbstractTableModel {
         }
 
         Task task = (Task) dataVector.get(dataVector.size() - 1);
-        if  (   task.getId() == 0
-            // &&  task.getText().trim().equals("") 
+        if  (  task.getText().trim().isEmpty() 
             // &&  task.getCreationDate().toString().equals("")
             // &&  task.getCompletionDate().toString().equals("")
             )
@@ -313,7 +313,7 @@ public class TaskTableModel extends AbstractTableModel {
      * [addEmptyRow description]
      */
     public void addEmptyRow() {
-        Task task = new Task("");
+        Task task = new Task();
         dataVector.add(task);
         fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
     }
@@ -356,6 +356,6 @@ public class TaskTableModel extends AbstractTableModel {
             t.resetChangedFlag();
         }
         db.flush();
-        //bufferData = new Vector<Task>(dataVector);
+        bufferData = new Vector<Task>(dataVector);
     }
 }

@@ -4,45 +4,51 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.*;
 import java.util.Date;
+import java.util.UUID;
 
 
-// public class Task extends Observable {
 public class Task {
 
     private boolean hasChanged = false;
 
-    private int     id = 1;
     private int     order;
-    private int     parentId;
+    private String  id;
+    private String  parentId;
     private String  text;
     private Date    creationDate;
     private Date    completionDate;
 
-    public Task() {
-        this("");
+    public Task() {        
+        id   = UUID.randomUUID().toString().replace("-", "");
+        text = "";
     }
 
     public Task(String s)
     {
-        String[] fields = fields = s.replace("|", "::").split("::",-1);
-
-        System.out.println("Task:" + s);
-
+        String[] fields = s.replace("|", "::").split("::",-1);
         try {
             DateFormat df       = DateFormat.getDateInstance();
-            this.id             = Integer.parseInt(fields[0]);
+            this.id             = fields[0];
             this.order          = Integer.parseInt(fields[1]);
             this.text           = fields[2];
             this.creationDate   = df.parse(fields[3]);
             this.completionDate = df.parse(fields[4]);
-            this.parentId       = 0;
+            this.parentId       = null;
         }
         catch (ParseException e) {}
         catch (Exception e) {}
     }
 
-    public void setId(int id) {
-        if (id == this.id) {
+    public void setOrder(int order) {
+        if (order == this.order) {
+            return;            
+        }
+        this.order = order;
+        this.hasChanged = true;
+    }
+
+    public void setId(String id) {
+        if (id == null ? this.id == null : id.equals(this.id)) {
             return;            
         }
         this.id = id;
@@ -55,26 +61,14 @@ public class Task {
         }
         this.text       = text;
         this.hasChanged = true;
-        // setChanged();
-        // notifyObservers();
     }
 
-    public void setOrder(int order) {
-        if (order == this.order) {
-            return;            
-        }
-        this.order = order;
-        this.hasChanged = true;
-    }
-
-    public void setParentId(int parentId) {
-        if (parentId == 0 ? this.parentId == 0 : this.parentId == parentId) {
+    public void setParentId(String parentId) {
+        if (parentId == null ? this.parentId == null : parentId.equals(this.parentId)) {
             return;            
         }
         this.parentId   = parentId;
         this.hasChanged = true;
-        // setChanged();
-        // notifyObservers();
     }
 
     public void setCreationDate(Date creationDate) {
@@ -83,8 +77,6 @@ public class Task {
         }
         this.creationDate = creationDate;
         this.hasChanged   = true;
-        // setChanged();
-        // notifyObservers();
     }
 
     public void setCompletionDate(Date completionDate) {
@@ -93,15 +85,13 @@ public class Task {
         }
         this.completionDate = completionDate;
         this.hasChanged     = true;
-        // setChanged();
-        // notifyObservers();
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public int getParentId() {
+    public String getParentId() {
         return parentId;
     }
 
@@ -133,6 +123,7 @@ public class Task {
     {
         List<String> list = new ArrayList<String>();
         DateFormat   df   = DateFormat.getDateInstance();
+        list.add(id);
         list.add(Integer.toString(order));
         list.add(text);
         list.add((creationDate != null ? df.format(creationDate) : ""));

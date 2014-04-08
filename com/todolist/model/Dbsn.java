@@ -32,19 +32,40 @@ public class Dbsn {
 
     public void addTask(Task task) {
         DbsnDriver.INSTANCE.addFragm(dbh, task.toString());
+        
+        System.out.println("created task id: " + task.getId());
     }
 
     public void updateTask(Task task) {
-        System.out.println("updateTask - "+task.getId());
-        DbsnDriver.INSTANCE.setNom(dbh, task.getId());
+        int n = findFragmentNumberByTaskId(task.getId());
+        DbsnDriver.INSTANCE.setNom(dbh, n);
         DbsnDriver.INSTANCE.setFragm(dbh, task.toString());
     }
 
     public void removeTask(Task task) {
-        System.out.println("removeTask - "+task.getId());
-        DbsnDriver.INSTANCE.setNom(dbh, task.getId());
+        int n = findFragmentNumberByTaskId(task.getId());
+        DbsnDriver.INSTANCE.setNom(dbh, n);
         DbsnDriver.INSTANCE.cutFragm(dbh);
-    }    
+    }
+
+    public int findFragmentNumberByTaskId(String id)
+    {
+        int rowCount = DbsnDriver.INSTANCE.countFragm(dbh);
+        for(int i = 1; i <= rowCount; i++)
+        {
+            byte[] fragm = new byte[32567];
+            DbsnDriver.INSTANCE.setNom(dbh, i);
+            DbsnDriver.INSTANCE.getFragm(dbh, fragm, fragm.length);
+            String s = new String(fragm).trim();
+
+            String[] fields = s.replace("|", "::").split("::",-1);
+            if (id.equals(fields[0])) {
+                return i;
+            }
+        }
+
+        return 0;
+    }
 
     public Vector<Task> loadData()
     {
@@ -55,15 +76,15 @@ public class Dbsn {
             byte[] fragm = new byte[32567];
             DbsnDriver.INSTANCE.setNom(dbh, i);
             DbsnDriver.INSTANCE.getFragm(dbh, fragm, fragm.length);
-            String text = new String(fragm).trim();
+            String s = new String(fragm).trim();
 
-            StringBuilder builder = new StringBuilder();
-            builder.append(i);
-            builder.append("|");
-            builder.append(text);
-
-            Task aTask  = new Task(builder.toString());
-            //Task aTask  = new Task(i, 0, text);
+            // StringBuilder builder = new StringBuilder();
+            // builder.append(i);
+            // builder.append("|");
+            // builder.append(s);
+            // Task aTask  = new Task(builder.toString());
+            
+            Task aTask  = new Task(s);
             
             data.add(aTask);
         }
