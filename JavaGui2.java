@@ -48,6 +48,8 @@ public class JavaGui2 {
 
 
 class ApplicationWindow extends JFrame {
+
+    //private String      imagesPath  = "resources/images/";
 	
 	// Name-constants to define the various dimensions
 	public static final int WINDOW_WIDTH  = 640;
@@ -68,7 +70,6 @@ class ApplicationWindow extends JFrame {
     private JLabel             findLabel     = new JLabel("Find:");;
     private JTextField         findText      = new JTextField();
     private JButton            findButton    = new JButton("Find");
-    private JButton            testButton    = new JButton("Test");
 
     public ApplicationWindow(String title)
     {
@@ -100,7 +101,7 @@ class ApplicationWindow extends JFrame {
     private void initComponents()
     {
         try {
-            removeButtonIcon = ImageIO.read(new File("resources/item-del.png"));
+            removeButtonIcon = ImageIO.read(new File("resources/images/item-del.png"));
         } catch (IOException e) {}
 
 

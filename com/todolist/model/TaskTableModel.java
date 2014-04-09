@@ -13,8 +13,6 @@ public class TaskTableModel extends AbstractTableModel {
     public static final int TEXT_INDEX         = 2;
     public static final int CREATED_AT_INDEX   = 3;
     public static final int COMPLITED_TO_INDEX = 4;
-
-    // public static final int HIDDEN_INDEX       = 5;
     public static final int HIDDEN_INDEX2      = 5;
 
     /**
@@ -110,7 +108,7 @@ public class TaskTableModel extends AbstractTableModel {
     protected Vector<Task>    dataVector  = new Vector<Task>();
     protected Vector<Task>    bufferData;
 
-    private Dbsn              db = new Dbsn("resources/TestDBSN");
+    private Dbsn              db = new Dbsn("resources/db/todo");
 
     public TaskTableModel() {
         super();
@@ -343,16 +341,16 @@ public class TaskTableModel extends AbstractTableModel {
      * @param changedTask [description]
      */
     public void save()
-    {
-        for (Task t : getChangedTask()) {
-            db.updateTask(t);
-            t.resetChangedFlag();
-        }
+    {        
         for (Task t : getRemovedTask()) {
             db.removeTask(t);
         }
         for (Task t : getCreatedTask()) {
             db.addTask(t);
+            t.resetChangedFlag();
+        }
+        for (Task t : getChangedTask()) {
+            db.updateTask(t);
             t.resetChangedFlag();
         }
         db.flush();

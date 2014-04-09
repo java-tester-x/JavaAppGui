@@ -16,9 +16,7 @@ public class Dbsn {
 
 
     public void connect(String dbsnPath) {
-        DbsnDriver.INSTANCE.packDBSN(dbsnPath);        
         dbh = DbsnDriver.INSTANCE.openDBSN(dbsnPath);
-        flush();
     }
 
     public void flush() {
@@ -26,26 +24,27 @@ public class Dbsn {
     }
 
     public void disconnect() {
-        flush();
+        DbsnDriver.INSTANCE.flushDBSN(dbh);
         DbsnDriver.INSTANCE.closeDBSN(dbh);
     }
 
     public void addTask(Task task) {
-        DbsnDriver.INSTANCE.addFragm(dbh, task.toString());
-        
-        System.out.println("created task id: " + task.getId());
+        DbsnDriver.INSTANCE.addFragm(dbh, task.toString());        
+        // System.out.println("created task id: " + task.getId());
     }
 
     public void updateTask(Task task) {
         int n = findFragmentNumberByTaskId(task.getId());
         DbsnDriver.INSTANCE.setNom(dbh, n);
         DbsnDriver.INSTANCE.setFragm(dbh, task.toString());
+        // System.out.println("nom = "+n+" for updated task id: " + task.getId());
     }
 
     public void removeTask(Task task) {
         int n = findFragmentNumberByTaskId(task.getId());
         DbsnDriver.INSTANCE.setNom(dbh, n);
         DbsnDriver.INSTANCE.cutFragm(dbh);
+        // System.out.println("nom = "+n+" for removed task id: " + task.getId());
     }
 
     public int findFragmentNumberByTaskId(String id)
