@@ -26,6 +26,7 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
 
 import com.todolist.model.TaskTableModel;
+import com.todolist.util.LineNumberTableRowHeader;
 
 /**
  * Main apllication file.
@@ -49,7 +50,7 @@ public class JavaGui2 {
 
 class ApplicationWindow extends JFrame {
 
-    //private String      imagesPath  = "resources/images/";
+    private String      imagPath  = "resources/images/";
 	
 	// Name-constants to define the various dimensions
 	public static final int WINDOW_WIDTH  = 640;
@@ -100,11 +101,12 @@ class ApplicationWindow extends JFrame {
      */
     private void initComponents()
     {
+        //
         try {
-            removeButtonIcon = ImageIO.read(new File("resources/images/item-del.png"));
+            removeButtonIcon = ImageIO.read(new File(imagPath+"item-del.png"));
         } catch (IOException e) {}
 
-
+        //
         taskTableModel = new TaskTableModel();
         taskTableModel.addTableModelListener(new ApplicationWindow.TaskTableModelListener());
         taskTable = new JTable();
@@ -112,28 +114,42 @@ class ApplicationWindow extends JFrame {
         taskTable.setSurrendersFocusOnKeystroke(true);
         taskTable.addMouseListener(new JTableButtonMouseListener(taskTable));
 
+        //
         scroller = new JScrollPane(taskTable);
         taskTable.setPreferredScrollableViewportSize(new java.awt.Dimension(500, 300));
-        
-        TableColumn hidden = taskTable.getColumnModel().getColumn(TaskTableModel.ID_INDEX);
+
+        //
+        LineNumberTableRowHeader tableLineNumber = new LineNumberTableRowHeader(scroller, taskTable);
+        tableLineNumber.setBackground(taskTable.getGridColor());
+        scroller.setRowHeaderView(tableLineNumber);
+
+        //
+        // TableColumn hidden = taskTable.getColumnModel().getColumn(TaskTableModel.ID_INDEX);
+        // hidden.setCellRenderer(new HiddenColumnRenderer(TaskTableModel.ID_INDEX));
+        TableColumn hidden = taskTable.getColumnModel().getColumn(TaskTableModel.Column.values()[0]);
+        hidden.setCellRenderer(new HiddenColumnRenderer(TaskTableModel.Column.ID));
         hidden.setMinWidth(2);
         hidden.setPreferredWidth(2);
         hidden.setMaxWidth(2);
-        hidden.setCellRenderer(new HiddenColumnRenderer(TaskTableModel.ID_INDEX));
 
-        TableColumn buttonColumn = taskTable.getColumnModel().getColumn(TaskTableModel.HIDDEN_INDEX2);
+        //
+        // TableColumn buttonColumn = taskTable.getColumnModel().getColumn(TaskTableModel.HIDDEN_INDEX2);
+        TableColumn buttonColumn = taskTable.getColumnModel().getColumn(TaskTableModel.Column.values()[5]);
         buttonColumn.setMinWidth(20);
         buttonColumn.setPreferredWidth(20);
         buttonColumn.setMaxWidth(20);
         buttonColumn.setCellRenderer(new ButtonColumnRenderer());
 
-        TableColumn idColumn = taskTable.getColumnModel().getColumn(TaskTableModel.ORDER_INDEX);
-        idColumn.setMinWidth(38);
-        idColumn.setPreferredWidth(38);
-        idColumn.setMaxWidth(38);
+        //
+        // TableColumn sortColumn = taskTable.getColumnModel().getColumn(TaskTableModel.ORDER_INDEX);
+        TableColumn sortColumn = taskTable.getColumnModel().getColumn(TaskTableModel.Column.values()[1]);
+        sortColumn.setMinWidth(40);
+        sortColumn.setPreferredWidth(40);
+        sortColumn.setMaxWidth(40);
         
-        TableColumn textColumn = taskTable.getColumnModel().getColumn(TaskTableModel.TEXT_INDEX);
-        //textColumn.setMinWidth(350);
+        //        
+        // TableColumn textColumn = taskTable.getColumnModel().getColumn(TaskTableModel.TEXT_INDEX);
+        TableColumn textColumn = taskTable.getColumnModel().getColumn(TaskTableModel.Column.values()[2]);
         textColumn.setPreferredWidth(350);
         
         addButton     = new JButton("Add");

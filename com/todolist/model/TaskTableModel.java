@@ -18,93 +18,135 @@ public class TaskTableModel extends AbstractTableModel {
     /**
      * Represents a column of the table.
      */
-    // static enum Column {
-    //     ID("Id") {
-    //         @Override public Object getValue(Task task) {
-    //             return task.getId();
-    //         }
-    //         @Override public Class getColumnClass() {
-    //             return Integer.class;
-    //         }
-    //         @Override public int getWidthInCharacters() {
-    //             return 10;
-    //         }
-    //     },
+    public static enum Column {
 
-    //     TEXT("Text") {
-    //         @Override public Object getValue(Task task) {
-    //             return task.getText();
-    //             }
-    //         @Override public Class getColumnClass() {
-    //             return String.class;
-    //         }
-    //         @Override public int getWidthInCharacters() {
-    //             return 20;
-    //         }
-    //     },
+        ID("Id") {
+            @Override public Object getValue(Task task) {
+                return task.getId();
+            }
+            @Override public void setValue(Task task, Object value) {
+                task.setId((String) value);
+            }
+            @Override public Class getColumnClass() {
+                return String.class;
+            }
+            @Override public int getWidthInCharacters() {
+                return 30;
+            }
+        },
 
-    //     CREATED_AT("Created At") {
-    //         @Override public Object getValue(Task task) {
-    //             return task.getCreationDate();
-    //         }
+        ORDER("Order") {
+            @Override public Object getValue(Task task) {
+                return task.getOrder();
+            }
+            @Override public void setValue(Task task, Object value) {
+                task.setOrder((Integer) value);
+            }
+            @Override public Class getColumnClass() {
+                return Integer.class;
+            }
+            @Override public int getWidthInCharacters() {
+                return 10;
+            }
+        },
 
-    //         @Override public Class getColumnClass() {
-    //             return Date.class;
-    //         }
+        TEXT("Text") {
+            @Override public Object getValue(Task task) {
+                return task.getText();
+            }
+            @Override public void setValue(Task task, Object value) {
+                task.setText((String) value);
+            }
+            @Override public Class getColumnClass() {
+                return String.class;
+            }
+            @Override public int getWidthInCharacters() {
+                return 50;
+            }
+        },
 
-    //         @Override public int getWidthInCharacters() {
-    //             return 25;
-    //         }
-    //     },
+        CREATED_AT("Created At") {
+            @Override public Object getValue(Task task) {
+                return task.getCreationDate();
+            }
+            @Override public void setValue(Task task, Object value) {
+                task.setCreationDate((Date) value);
+            }
+            @Override public Class getColumnClass() {
+                return Date.class;
+            }
+            @Override public int getWidthInCharacters() {
+                return 25;
+            }
+        },
 
-    //     COMPLITED_TO("Complited To") {
-    //         @Override public Object getValue(Task task) {
-    //             return task.getComplitionDate();
-    //         }
+        COMPLITED_TO("Complited To") {
+            @Override public Object getValue(Task task) {
+                return task.getComplitionDate();
+            }
+            @Override public void setValue(Task task, Object value) {
+                task.setCompletionDate((Date) value);
+            }
+            @Override public Class getColumnClass() {
+                return Date.class;
+            }
+            @Override public int getWidthInCharacters() {
+                return 25;
+            }
+        },
 
-    //         @Override public Class getColumnClass() {
-    //             return Date.class;
-    //         }
-
-    //         @Override public int getWidthInCharacters() {
-    //             return 25;
-    //         }
-    //     },
+        DELETE_ACTION("") {
+            @Override public Object getValue(Task task) {
+                JButton button = new JButton();
+                return button;
+            }
+            @Override public void setValue(Task task, Object value) {
+                return;
+            }
+            @Override public Class getColumnClass() {
+                return JButton.class;
+            }
+            @Override public int getWidthInCharacters() {
+                return 5;
+            }
+        };
 
         
-    //     private String displayName;
+        private String displayName;
 
-    //     private Column(String displayName) {
-    //         assert displayName != null && displayName.length() > 0;
-    //         this.displayName = displayName;
-    //     }
+        private Column(String displayName) {
+            assert displayName != null && displayName.length() > 0;
+            this.displayName = displayName;
+        }
 
-    //     public String getDisplayName() {
-    //         return displayName;
-    //     }
+        public String getDisplayName() {
+            return displayName;
+        }
 
-    //     /**
-    //      * Return the value for this column for the specified
-    //      * person.
-    //      */
-    //     public abstract Object getValue(Person person);
+        /**
+         * Return the class of Object returned by this column.
+         */
+        public Class getColumnClass() {
+          return String.class; // Default value
+        }
 
-    //     /**
-    //      * Return the class of Object returned by this column.
-    //      */
-    //     public Class getColumnClass() {
-    //       return String.class; // Default value
-    //     }
+        /**
+         * Return the value for this column for the specified
+         * person.
+         */
+        public abstract Object getValue(Task task);
 
-    //     /**
-    //      * Return the number of characters needed to display the
-    //      * header and data for this column.
-    //      */
-    //     public abstract int getWidthInCharacters();
-    // }
+        public abstract void setValue(Task task, Object value);
+
+        /**
+         * Return the number of characters needed to display the
+         * header and data for this column.
+         */
+        public abstract int getWidthInCharacters();
+    }
 
 
-    protected String[]        columnNames = {"", "Order", "Text", "Created At", "Complited To", ""};    
+    protected String[]        columnNames = {"Id", "Order", "Text", "Created At", "Complited To", ""};    
     protected Vector<Task>    dataVector  = new Vector<Task>();
     protected Vector<Task>    bufferData;
 
@@ -132,115 +174,145 @@ public class TaskTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    @Override
+    // @Override
+    // public int getColumnCount() {
+    //     return columnNames.length;
+    // }
     public int getColumnCount() {
-        return columnNames.length;
+        return Column.values().length;
     }
     
     @Override
     public int getRowCount() {
         return dataVector.size();
     }
-    
-    @Override
-    public String getColumnName(int column) {
-        return columnNames[column];
+
+    private Column getColumn(int columnIndex) {
+        return Column.values()[columnIndex];
     }
-    
+
+    // @Override
+    // public String getColumnName(int column) {
+    //     return columnNames[column];
+    // }
+    @Override
+    public String getColumnName(int columnIndex) {
+       return getColumn(columnIndex).getDisplayName();
+    }
+   
+    // @Override
+    // public boolean isCellEditable(int row, int column) {
+    //     if (column == ID_INDEX || column == HIDDEN_INDEX2)  {
+    //         return false;
+    //     }
+    //     return true;
+    // }
+
     @Override
     public boolean isCellEditable(int row, int column) {
-        if (column == ID_INDEX || column == HIDDEN_INDEX2)  {
+        if (column == Column.ID || column == Column.DELETE_ACTION)  {
             return false;
         }
         return true;
     }
 
+    // @Override
+    // public Class getColumnClass(int column)
+    // {
+    //     switch (column) {
+    //         case ORDER_INDEX: 
+    //             return Integer.class;
+    //         case ID_INDEX:
+    //             return String.class;
+    //         case TEXT_INDEX:
+    //             return String.class;
+    //         case HIDDEN_INDEX2:
+    //             return JButton.class;
+    //         case CREATED_AT_INDEX:
+    //         case COMPLITED_TO_INDEX:
+    //             return Date.class;            
+    //         default: 
+    //             return Object.class;
+    //     }
+    // }
     @Override
-    public Class getColumnClass(int column)
-    {
-        switch (column) {
-            case ORDER_INDEX: 
-                return Integer.class;
-            case ID_INDEX:
-                return String.class;
-            case TEXT_INDEX:
-                return String.class;
-            case HIDDEN_INDEX2:
-                return JButton.class;
-            case CREATED_AT_INDEX:
-            case COMPLITED_TO_INDEX:
-                return Date.class;            
-            default: 
-                return Object.class;
-        }
+    public Class getColumnClass(int columnIndex) {
+        Column column = getColumn(columnIndex);
+        return column.getColumnClass();
     }
 
-    @Override
-    public Object getValueAt(int row, int column)
-    {
-        Task task = (Task) dataVector.get(row);
-        switch (column) {
-            case ID_INDEX:
-                return task.getId();
-            case ORDER_INDEX:
-                return task.getOrder();
-            case TEXT_INDEX:
-                return task.getText();
-            case CREATED_AT_INDEX:
-                return task.getCreationDate();
-            case COMPLITED_TO_INDEX:
-                return task.getCompletionDate();
-            case HIDDEN_INDEX2:
-                JButton button = new JButton();
-                return button;
-            default:
-                return new Object();
-        }
+    // @Override
+    // public Object getValueAt(int row, int column)
+    // {
+    //     Task task = (Task) dataVector.get(row);
+    //     switch (column) {
+    //         case ID_INDEX:
+    //             return task.getId();
+    //         case ORDER_INDEX:
+    //             return task.getOrder();
+    //         case TEXT_INDEX:
+    //             return task.getText();
+    //         case CREATED_AT_INDEX:
+    //             return task.getCreationDate();
+    //         case COMPLITED_TO_INDEX:
+    //             return task.getCompletionDate();
+    //         case HIDDEN_INDEX2:
+    //             JButton button = new JButton();
+    //             return button;
+    //         default:
+    //             return new Object();
+    //     }
+    // }
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        Task   task   = getTask(rowIndex);
+        Column column = getColumn(columnIndex);
+        return column.getValue(task);
     }
 
-    @Override
-    public void setValueAt(Object value, int row, int column)
-    {
-        Task task = (Task) dataVector.get(row);
-        switch (column) {
-            case ID_INDEX:
-                task.setId((String) value);
-                break;
-            case ORDER_INDEX:
-                task.setOrder((Integer) value);
-                break;
-            case TEXT_INDEX:
-                task.setText((String) value);
-                break;
-            case CREATED_AT_INDEX:
-                task.setCreationDate((Date) value);
-                break;
-            case COMPLITED_TO_INDEX:
-                task.setCompletionDate((Date) value);
-                break;
-            default:
-                System.out.println("invalid index");
-        }
+
+    // @Override
+    // public void setValueAt(Object value, int row, int column)
+    // {
+    //     Task task = (Task) dataVector.get(row);
+    //     switch (column) {
+    //         case ID_INDEX:
+    //             task.setId((String) value);
+    //             break;
+    //         case ORDER_INDEX:
+    //             task.setOrder((Integer) value);
+    //             break;
+    //         case TEXT_INDEX:
+    //             task.setText((String) value);
+    //             break;
+    //         case CREATED_AT_INDEX:
+    //             task.setCreationDate((Date) value);
+    //             break;
+    //         case COMPLITED_TO_INDEX:
+    //             task.setCompletionDate((Date) value);
+    //             break;
+    //         default:
+    //             System.out.println("invalid index");
+    //     }
+    //     fireTableCellUpdated(row, column);
+    // }
+    public void setValueAt(Object value, int row, int column) {
+        Task   task   = getTask(row);
+        Column column = getColumn(column);
+        column.setValue(task, value);
         fireTableCellUpdated(row, column);
     }
 
-    /**
-     * [addTask description]
-     * @param task [description]
-     */
-    // public void addTask(Task task) {
-    //     dataVector.add(task);
-    //     fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
-    // }
 
     /**
-     * [getTaskAt description]
-     * @param  row [description]
-     * @return     [description]
+     * [getTask description]
+     * @param  rowIndex [description]
+     * @return          [description]
      */
-    // public Task getTaskAt(int row) {
-    //     return dataVector.get(row);
-    // }
+    Task getTask(int row) {
+        return (Task) dataVector.get(row);
+    }
+
+   
 
     /**
      * [getChangedPeople description]
