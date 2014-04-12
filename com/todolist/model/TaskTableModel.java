@@ -33,6 +33,9 @@ public class TaskTableModel extends AbstractTableModel {
             @Override public int getWidthInCharacters() {
                 return 30;
             }
+            @Override public int getColumnIndex() {
+                return 0;
+            }
         },
 
         ORDER("Order") {
@@ -47,6 +50,9 @@ public class TaskTableModel extends AbstractTableModel {
             }
             @Override public int getWidthInCharacters() {
                 return 10;
+            }
+            @Override public int getColumnIndex() {
+                return 1;
             }
         },
 
@@ -63,6 +69,9 @@ public class TaskTableModel extends AbstractTableModel {
             @Override public int getWidthInCharacters() {
                 return 50;
             }
+            @Override public int getColumnIndex() {
+                return 2;
+            }
         },
 
         CREATED_AT("Created At") {
@@ -78,11 +87,14 @@ public class TaskTableModel extends AbstractTableModel {
             @Override public int getWidthInCharacters() {
                 return 25;
             }
+            @Override public int getColumnIndex() {
+                return 3;
+            }
         },
 
-        COMPLITED_TO("Complited To") {
+        COMPLITED_TO("Completed To") {
             @Override public Object getValue(Task task) {
-                return task.getComplitionDate();
+                return task.getCompletionDate();
             }
             @Override public void setValue(Task task, Object value) {
                 task.setCompletionDate((Date) value);
@@ -92,6 +104,27 @@ public class TaskTableModel extends AbstractTableModel {
             }
             @Override public int getWidthInCharacters() {
                 return 25;
+            }
+            @Override public int getColumnIndex() {
+                return 4;
+            }
+        },
+
+        IS_COMPLITED("Completed?") {
+            @Override public Object getValue(Task task) {
+                return task.getCompletedFlag();
+            }
+            @Override public void setValue(Task task, Object value) {
+                task.setCompletedFlag((Boolean) value);
+            }
+            @Override public Class getColumnClass() {
+                return Boolean.class;
+            }
+            @Override public int getWidthInCharacters() {
+                return 5;
+            }
+            @Override public int getColumnIndex() {
+                return 5;
             }
         },
 
@@ -108,6 +141,9 @@ public class TaskTableModel extends AbstractTableModel {
             }
             @Override public int getWidthInCharacters() {
                 return 5;
+            }
+            @Override public int getColumnIndex() {
+                return 6;
             }
         };
 
@@ -138,6 +174,8 @@ public class TaskTableModel extends AbstractTableModel {
 
         public abstract void setValue(Task task, Object value);
 
+        public abstract int getColumnIndex();
+
         /**
          * Return the number of characters needed to display the
          * header and data for this column.
@@ -146,7 +184,7 @@ public class TaskTableModel extends AbstractTableModel {
     }
 
 
-    protected String[]        columnNames = {"Id", "Order", "Text", "Created At", "Complited To", ""};    
+    // protected String[]        columnNames = {"Id", "Order", "Text", "Created At", "Complited To", ""};    
     protected Vector<Task>    dataVector  = new Vector<Task>();
     protected Vector<Task>    bufferData;
 
@@ -209,8 +247,11 @@ public class TaskTableModel extends AbstractTableModel {
     // }
 
     @Override
-    public boolean isCellEditable(int row, int column) {
-        if (column == Column.ID || column == Column.DELETE_ACTION)  {
+    public boolean isCellEditable(int row, int columnIndex) {
+        if (   columnIndex == Column.ID.getColumnIndex()
+            || columnIndex == Column.DELETE_ACTION.getColumnIndex()
+            || columnIndex == Column.COMPLITED_TO.getColumnIndex()
+        )  {
             return false;
         }
         return true;
@@ -295,11 +336,11 @@ public class TaskTableModel extends AbstractTableModel {
     //     }
     //     fireTableCellUpdated(row, column);
     // }
-    public void setValueAt(Object value, int row, int column) {
-        Task   task   = getTask(row);
-        Column column = getColumn(column);
+    public void setValueAt(Object value, int rowIndex, int columnIndex) {
+        Task   task   = getTask(rowIndex);
+        Column column = getColumn(columnIndex);
         column.setValue(task, value);
-        fireTableCellUpdated(row, column);
+        fireTableCellUpdated(rowIndex, columnIndex);
     }
 
 
@@ -308,8 +349,8 @@ public class TaskTableModel extends AbstractTableModel {
      * @param  rowIndex [description]
      * @return          [description]
      */
-    Task getTask(int row) {
-        return (Task) dataVector.get(row);
+    Task getTask(int rowIndex) {
+        return (Task) dataVector.get(rowIndex);
     }
 
    
@@ -392,10 +433,10 @@ public class TaskTableModel extends AbstractTableModel {
      * [removeRow description]
      * @param row [description]
      */
-    public void removeRow(int row)
+    public void removeRow(int rowIndex)
     {
-        dataVector.remove(row);
-        fireTableRowsDeleted(row, row);
+        dataVector.remove(rowIndex);
+        fireTableRowsDeleted(rowIndex, rowIndex);
     }
 
 

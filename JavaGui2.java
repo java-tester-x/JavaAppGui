@@ -111,6 +111,7 @@ class ApplicationWindow extends JFrame {
         taskTableModel.addTableModelListener(new ApplicationWindow.TaskTableModelListener());
         taskTable = new JTable();
         taskTable.setModel(taskTableModel);
+        taskTable.setAutoCreateRowSorter(true);
         taskTable.setSurrendersFocusOnKeystroke(true);
         taskTable.addMouseListener(new JTableButtonMouseListener(taskTable));
 
@@ -124,32 +125,27 @@ class ApplicationWindow extends JFrame {
         scroller.setRowHeaderView(tableLineNumber);
 
         //
-        // TableColumn hidden = taskTable.getColumnModel().getColumn(TaskTableModel.ID_INDEX);
-        // hidden.setCellRenderer(new HiddenColumnRenderer(TaskTableModel.ID_INDEX));
-        TableColumn hidden = taskTable.getColumnModel().getColumn(TaskTableModel.Column.values()[0]);
-        hidden.setCellRenderer(new HiddenColumnRenderer(TaskTableModel.Column.ID));
+        TableColumn hidden = taskTable.getColumnModel().getColumn(TaskTableModel.Column.ID.getColumnIndex());
+        hidden.setCellRenderer(new HiddenColumnRenderer(TaskTableModel.Column.ID.getColumnIndex()));
         hidden.setMinWidth(2);
         hidden.setPreferredWidth(2);
         hidden.setMaxWidth(2);
 
         //
-        // TableColumn buttonColumn = taskTable.getColumnModel().getColumn(TaskTableModel.HIDDEN_INDEX2);
-        TableColumn buttonColumn = taskTable.getColumnModel().getColumn(TaskTableModel.Column.values()[5]);
+        TableColumn buttonColumn = taskTable.getColumnModel().getColumn(TaskTableModel.Column.DELETE_ACTION.getColumnIndex());
         buttonColumn.setMinWidth(20);
         buttonColumn.setPreferredWidth(20);
         buttonColumn.setMaxWidth(20);
         buttonColumn.setCellRenderer(new ButtonColumnRenderer());
 
         //
-        // TableColumn sortColumn = taskTable.getColumnModel().getColumn(TaskTableModel.ORDER_INDEX);
-        TableColumn sortColumn = taskTable.getColumnModel().getColumn(TaskTableModel.Column.values()[1]);
+        TableColumn sortColumn = taskTable.getColumnModel().getColumn(TaskTableModel.Column.ORDER.getColumnIndex());
         sortColumn.setMinWidth(40);
         sortColumn.setPreferredWidth(40);
         sortColumn.setMaxWidth(40);
         
         //        
-        // TableColumn textColumn = taskTable.getColumnModel().getColumn(TaskTableModel.TEXT_INDEX);
-        TableColumn textColumn = taskTable.getColumnModel().getColumn(TaskTableModel.Column.values()[2]);
+        TableColumn textColumn = taskTable.getColumnModel().getColumn(TaskTableModel.Column.TEXT.getColumnIndex());
         textColumn.setPreferredWidth(350);
         
         addButton     = new JButton("Add");
@@ -171,9 +167,6 @@ class ApplicationWindow extends JFrame {
         // JDatePickerImpl datePicker = new JDatePickerImpl(datePanel);
         // inputPanel.add(datePicker);
 
-
-        // TableColumn creationDateColumn = taskTable.getColumnModel().getColumn(TaskTableModel.CREATED_AT_INDEX);
-        // creationDateColumn.setCellEditor(new MyTableCellEditor());
 
 
         layout.setHorizontalGroup(layout.createParallelGroup()

@@ -17,6 +17,7 @@ public class Task {
     private String  text;
     private Date    creationDate;
     private Date    completionDate;
+    private boolean isCompleted;
 
     public Task() {        
         id   = UUID.randomUUID().toString().replace("-", "");
@@ -33,6 +34,7 @@ public class Task {
             this.text           = fields[2];
             this.creationDate   = df.parse(fields[3]);
             this.completionDate = df.parse(fields[4]);
+            this.isCompleted    = false;
             this.parentId       = null;
         }
         catch (ParseException e) {}
@@ -85,6 +87,14 @@ public class Task {
         }
         this.completionDate = completionDate;
         this.hasChanged     = true;
+    }
+
+    public void setCompletedFlag(boolean completed) {
+        this.isCompleted = completed;
+    }
+
+    public boolean getCompletedFlag() {
+        return this.isCompleted;
     }
 
     public String getId() {
