@@ -1,6 +1,7 @@
 package com.todolist.model;
 
 import java.text.DateFormat;
+// import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.*;
 import java.util.Date;
@@ -20,8 +21,11 @@ public class Task {
     private boolean isCompleted;
 
     public Task() {        
-        id   = UUID.randomUUID().toString().replace("-", "");
-        text = "";
+        this.id             = UUID.randomUUID().toString().replace("-", "");
+        this.text           = "";
+        this.creationDate   = Calendar.getInstance().getTime();
+        this.completionDate = null;
+        this.isCompleted    = false;
     }
 
     public Task(String s)
@@ -34,7 +38,7 @@ public class Task {
             this.text           = fields[2];
             this.creationDate   = df.parse(fields[3]);
             this.completionDate = df.parse(fields[4]);
-            this.isCompleted    = false;
+            this.isCompleted    = ! (fields[4]).isEmpty();
             this.parentId       = null;
         }
         catch (ParseException e) {}
@@ -91,6 +95,11 @@ public class Task {
 
     public void setCompletedFlag(boolean completed) {
         this.isCompleted = completed;
+        if (completed) {
+            setCompletionDate(Calendar.getInstance().getTime());
+            return;
+        }
+        setCompletionDate(null);
     }
 
     public boolean getCompletedFlag() {
@@ -136,8 +145,11 @@ public class Task {
         list.add(id);
         list.add(Integer.toString(order));
         list.add(text);
-        list.add((creationDate != null ? df.format(creationDate) : ""));
-        list.add((creationDate != null ? df.format(completionDate) : ""));
+
+        System.out.println(df.format(creationDate));
+
+        list.add((creationDate   != null ? df.format(creationDate) : ""));
+        list.add((completionDate != null ? df.format(completionDate) : ""));
 
         // Remove all empty values
         // list.removeAll(Arrays.asList("", null));

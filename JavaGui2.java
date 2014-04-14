@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 
 import static javax.swing.GroupLayout.Alignment.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -72,6 +73,9 @@ class ApplicationWindow extends JFrame {
     private JTextField         findText      = new JTextField();
     private JButton            findButton    = new JButton("Find");
 
+    private TableRowSorter<TaskTableModel> filter;
+
+
     public ApplicationWindow(String title)
     {
 		mainContentPane = this.getContentPane();
@@ -114,6 +118,11 @@ class ApplicationWindow extends JFrame {
         taskTable.setAutoCreateRowSorter(true);
         taskTable.setSurrendersFocusOnKeystroke(true);
         taskTable.addMouseListener(new JTableButtonMouseListener(taskTable));
+        taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        //
+        filter = new TableRowSorter<TaskTableModel>(taskTableModel);
+        taskTable.setRowSorter(filter);
 
         //
         scroller = new JScrollPane(taskTable);
@@ -154,6 +163,23 @@ class ApplicationWindow extends JFrame {
         saveButton.addActionListener(new SaveDataActionListener());
         refreshButton = new JButton("Refresh");
         refreshButton.addActionListener(new LoadDataActionListener());
+
+        findButton.addActionListener(new FindDataActionListener());
+
+        //Whenever filterText changes, invoke newFilter.
+        // findText.getDocument().addDocumentListener(
+        //     new DocumentListener() {
+        //         public void changedUpdate(DocumentEvent e) {
+        //             findButton.doClick();
+        //         }
+        //         public void insertUpdate(DocumentEvent e) {
+        //             findButton.doClick();
+        //         }
+        //         public void removeUpdate(DocumentEvent e) {
+        //             findButton.doClick();
+        //         }
+        //     }
+        // );
 
         inputPanel = new JPanel();
         inputPanel.add(addButton);
@@ -234,22 +260,38 @@ class ApplicationWindow extends JFrame {
         }
     }
 
-    
-    class MyTableCellEditor extends AbstractCellEditor implements TableCellEditor
-    {
-        JComponent component = new JTextField();
-
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int rowIndex, int vColIndex)
-        {
-            ((JTextField) component).setText((String) value);
-
-            return component;
-        }
-
-        public Object getCellEditorValue() {
-            return ((JTextField) component).getText();
+    /** 
+     * Update the row filter regular expression from the expression in  the text box.
+     */
+    class FindDataActionListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            RowFilter<TaskTableModel, Object> rf = null;
+            //If current expression doesn't parse, don't update.
+            try {
+                rf = RowFilter.regexFilter(ApplicationWindow.this.findText.getText(), TaskTableModel.Column.TEXT.getColumnIndex());
+            } catch (java.util.regex.PatternSyntaxException e) {
+                return;
+            }
+            ApplicationWindow.this.filter.setRowFilter(rf);    
         }
     }
+
+    
+    // class MyTableCellEditor extends AbstractCellEditor implements TableCellEditor
+    // {
+    //     JComponent component = new JTextField();
+
+    //     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int rowIndex, int vColIndex)
+    //     {
+    //         ((JTextField) component).setText((String) value);
+
+    //         return component;
+    //     }
+
+    //     public Object getCellEditorValue() {
+    //         return ((JTextField) component).getText();
+    //     }
+    // }
 
     /**
      * 
@@ -358,7 +400,6 @@ class ApplicationWindow extends JFrame {
             }
             else if (evt.getType() == TableModelEvent.UPDATE) {
                 System.out.println("UPDATE ROW: " + row + " column: " + column);
-                taskTable.setColumnSelectionInterval(column + 1, column + 1);
             }
             else if (evt.getType() == TableModelEvent.DELETE) {
                 System.out.println("DELETE row: " + row + " column: " + column);

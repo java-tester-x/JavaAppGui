@@ -250,6 +250,7 @@ public class TaskTableModel extends AbstractTableModel {
     public boolean isCellEditable(int row, int columnIndex) {
         if (   columnIndex == Column.ID.getColumnIndex()
             || columnIndex == Column.DELETE_ACTION.getColumnIndex()
+            || columnIndex == Column.CREATED_AT.getColumnIndex()
             || columnIndex == Column.COMPLITED_TO.getColumnIndex()
         )  {
             return false;
@@ -340,7 +341,7 @@ public class TaskTableModel extends AbstractTableModel {
         Task   task   = getTask(rowIndex);
         Column column = getColumn(columnIndex);
         column.setValue(task, value);
-        fireTableCellUpdated(rowIndex, columnIndex);
+        fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
 
