@@ -18,14 +18,6 @@ import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.File;
 
-
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.SqlDateModel;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
-import net.sourceforge.jdatepicker.impl.UtilDateModel;
-
-
 import com.todolist.model.TaskTableModel;
 import com.todolist.util.LineNumberTableRowHeader;
 
@@ -71,7 +63,7 @@ class ApplicationWindow extends JFrame {
 
     private JLabel             findLabel     = new JLabel("Find:");;
     private JTextField         findText      = new JTextField();
-    private JButton            findButton    = new JButton("Find");
+    private JButton            clearFilterButton;
 
     private TableRowSorter<TaskTableModel> filter;
 
@@ -91,8 +83,8 @@ class ApplicationWindow extends JFrame {
         initComponents();   
 
 		// Content-pane adds components
-        mainContentPane.add(scroller, BorderLayout.CENTER);   
-        mainContentPane.add(inputPanel, BorderLayout.NORTH);   
+        // mainContentPane.add(scroller, BorderLayout.CENTER);   
+        // mainContentPane.add(inputPanel, BorderLayout.NORTH);   
 
         pack();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);       
@@ -130,7 +122,7 @@ class ApplicationWindow extends JFrame {
 
         //
         LineNumberTableRowHeader tableLineNumber = new LineNumberTableRowHeader(scroller, taskTable);
-        tableLineNumber.setBackground(taskTable.getGridColor());
+        tableLineNumber.setBackground(java.awt.Color.LIGHT_GRAY);
         scroller.setRowHeaderView(tableLineNumber);
 
         //
@@ -163,43 +155,38 @@ class ApplicationWindow extends JFrame {
         saveButton.addActionListener(new SaveDataActionListener());
         refreshButton = new JButton("Refresh");
         refreshButton.addActionListener(new LoadDataActionListener());
-
-        findButton.addActionListener(new FindDataActionListener());
+        clearFilterButton = new JButton("Clear");
+        clearFilterButton.addActionListener(new ClearFilterActionListener());
 
         //Whenever filterText changes, invoke newFilter.
-        // findText.getDocument().addDocumentListener(
-        //     new DocumentListener() {
-        //         public void changedUpdate(DocumentEvent e) {
-        //             findButton.doClick();
-        //         }
-        //         public void insertUpdate(DocumentEvent e) {
-        //             findButton.doClick();
-        //         }
-        //         public void removeUpdate(DocumentEvent e) {
-        //             findButton.doClick();
-        //         }
-        //     }
-        // );
+        findText.getDocument().addDocumentListener(
+            new DocumentListener() {
+                private String cmd = "findData";
+                private FindDataActionListener  findDataAction = new FindDataActionListener();
+
+                public void changedUpdate(DocumentEvent e) {
+                    findDataAction.actionPerformed(new ActionEvent(ApplicationWindow.this.findText, 0, cmd));
+                }
+                public void insertUpdate(DocumentEvent e) {
+                    findDataAction.actionPerformed(new ActionEvent(ApplicationWindow.this.findText, 0, cmd));
+                }
+                public void removeUpdate(DocumentEvent e) {
+                    findDataAction.actionPerformed(new ActionEvent(ApplicationWindow.this.findText, 0, cmd));
+                }
+            }
+        );
 
         inputPanel = new JPanel();
         inputPanel.add(addButton);
         inputPanel.add(saveButton);
         inputPanel.add(refreshButton);
 
-        // UtilDateModel   model = new UtilDateModel();
-        // model.setDate(1990, 8, 24);
-        // model.setSelected(true); 
-        // JDatePanelImpl  datePanel  = new JDatePanelImpl(model);
-        // JDatePickerImpl datePicker = new JDatePickerImpl(datePanel);
-        // inputPanel.add(datePicker);
-
-
-
+        //
         layout.setHorizontalGroup(layout.createParallelGroup()
             .addGroup(layout.createSequentialGroup()
                 .addComponent(findLabel)
                 .addComponent(findText)
-                .addComponent(findButton)
+                .addComponent(clearFilterButton)
             )
             .addComponent(scroller)
             .addComponent(inputPanel)
@@ -208,7 +195,7 @@ class ApplicationWindow extends JFrame {
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(findLabel)
                 .addComponent(findText)
-                .addComponent(findButton)
+                .addComponent(clearFilterButton)
             )
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)                
                 .addComponent(scroller)
@@ -264,15 +251,29 @@ class ApplicationWindow extends JFrame {
      * Update the row filter regular expression from the expression in  the text box.
      */
     class FindDataActionListener implements ActionListener {
-        public void actionPerformed(ActionEvent event) {
+        public void actionPerformed(ActionEvent event)
+        {
             RowFilter<TaskTableModel, Object> rf = null;
             //If current expression doesn't parse, don't update.
             try {
-                rf = RowFilter.regexFilter(ApplicationWindow.this.findText.getText(), TaskTableModel.Column.TEXT.getColumnIndex());
+                rf = RowFilter.regexFilter(
+                            ApplicationWindow.this.findText.getText()
+                        ,   TaskTableModel.Column.TEXT.getColumnIndex()
+                     );
             } catch (java.util.regex.PatternSyntaxException e) {
                 return;
             }
             ApplicationWindow.this.filter.setRowFilter(rf);    
+        }
+    }
+
+    /**
+     * 
+     */
+    class ClearFilterActionListener implements ActionListener {
+        public void actionPerformed(ActionEvent event)
+        {
+            ApplicationWindow.this.findText.setText("");
         }
     }
 
