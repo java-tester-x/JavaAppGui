@@ -43,7 +43,8 @@ public class Dbsn {
     public void removeTask(Task task) {
         int n = findFragmentNumberByTaskId(task.getId());
         DbsnDriver.INSTANCE.setNom(dbh, n);
-        DbsnDriver.INSTANCE.cutFragm(dbh);
+        DbsnDriver.INSTANCE.cutFragm(dbh); // TODO: replace to delFragm method !!!
+
         // System.out.println("nom = "+n+" for removed task id: " + task.getId());
     }
 
@@ -68,7 +69,7 @@ public class Dbsn {
 
     public Vector<Task> loadData()
     {
-        int rowCount = DbsnDriver.INSTANCE.countFragm(dbh);
+        int rowCount = DbsnDriver.INSTANCE.countFragm(dbh); // TODO replace to countActive() !!!
         Vector<Task> data = new Vector<Task>();
         for(int i = 1; i <= rowCount; i++)
         {
